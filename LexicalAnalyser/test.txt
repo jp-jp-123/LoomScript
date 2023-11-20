@@ -1,0 +1,36 @@
+num1 = 3 + 1
+
+IF (num1 > 3) {
+        IF (num1 > 5){
+                    OUTPUT(num1 + “ is greater than 5”)
+        }
+        IF ELSE (num1 == 3){
+                    OUTPUT(num1 + “ is equal to 3”)
+        }
+        ELSE {
+                    OUTPUT(num1 + “ is not greater than 5”)
+        }
+}
+IF ELSE (num1 == 3) {
+        IF (num1 > 6){
+                    OUTPUT(num1 + “ is greater than 6”)
+        }
+        IF ELSE (num1 == 3){
+                    OUTPUT(num1 + “ is equal to 3”)
+        }
+        ELSE {
+                    OUTPUT(num1 + “ is not greater than 6”)
+        }
+}
+
+ELSE {
+        IF (num1 > 7){
+                    OUTPUT(num1 + “ is greater than 7”)
+        }
+        IF ELSE (num1 == 3){
+                    OUTPUT(num1 + “ is equal to 3”)
+        }
+        ELSE {
+                    OUTPUT(num1 + “ is not greater than 7”)
+        }
+}
