@@ -1,4 +1,4 @@
-# token table for lexicalAnalyser.py
+# token table for lexer.py
 
 KEYWORDS = {
     "BOOL": "kw",
