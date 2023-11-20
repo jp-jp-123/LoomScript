@@ -42,7 +42,7 @@ class Lexer:
     def Tokenizer(self, lexeme: str):
 
         # Check if lexeme is a SPECIAL CHARACTER or an OPERATOR
-        if lexeme in SPECIAL_CHARACTERS or OPERATORS:
+        if lexeme in (SPECIAL_CHARACTERS or OPERATORS):
             self.SpecialCharTokenizer(lexeme)
 
         # Check if lexeme is a KEYWORD
