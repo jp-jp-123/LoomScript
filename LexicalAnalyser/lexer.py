@@ -14,27 +14,32 @@ class Lexer:
         self.tokenTable = []  # table for tokenized lexemes
         self.sourceCode = None  # source code
 
+    # Gets the file to be fed to Lexer
     def SourceToLexemes(self, filepath: str):
         with open(filepath) as file:
             self.sourceCode = file.readlines()
 
+        # Feeds file to parser by line
         for perLine in self.sourceCode:
             lexemes = perLine.strip().split()
 
             self.LexemeParser(lexemes)
 
+    # Parses the line of Lexemes into singular lexeme
     def LexemeParser(self, lexemes: list[str]):
 
         for lexeme in lexemes:
+            # Checks if String Buffer is active
             if self.stringLiteralBufferActive:
                 self.StringLiteralTokenizer(lexeme)
             else:
                 self.Tokenizer(lexeme)
 
+    # Tokenizing the lexemes happens here
     def Tokenizer(self, lexeme: str):
 
         # Check if lexeme is a SPECIAL CHARACTER
-        if lexeme in SPECIAL_CHARACTERS:
+        if lexeme in SPECIAL_CHARACTERS or OPERATORS:
             self.SpecialCharTokenizer(lexeme)
 
         # Check if lexeme is a KEYWORD
@@ -54,9 +59,11 @@ class Lexer:
                 self.tokenTable.append((lexeme, "IDENTIFIER"))
 
         # Check if lexeme is an INT LITERAL
+        # TODO: fix the lexeme where ints are identified as IDENTIFIERS
         elif lexeme.isdigit():
             self.tokenTable.append((lexeme, "INT_LITERAL"))
 
+    # If the lexeme is a special character checks if it is an operator or not
     def SpecialCharTokenizer(self, charLexeme: str):
 
         if charLexeme in OPERATORS:
@@ -64,11 +71,16 @@ class Lexer:
         else:
             self.tokenTable.append((charLexeme, "SPECIAL_CHAR"))
 
+    # Tokenizing the string literal happens here
     def StringLiteralTokenizer(self, lexeme: str):
+
+        # Adds the lexemes to the string buffer while keeping track of quotations passed
+        # TODO: edge cases for quotations inside quotations exists
         self.stringLiteralBuffer.append(lexeme)
         if ('"' or "'") in lexeme:
             self.quote += 1
 
+        # Turns off the buffer if quotations reached two
         if self.quote == 2:
             string = ' '.join(self.stringLiteralBuffer)
 
@@ -84,10 +96,13 @@ class Lexer:
             self.stringLiteralBufferActive = False
             self.quote = 0
 
+    # Displays the lexer output
     def LexerOutput(self):
-        k = list(OrderedDict.fromkeys(self.tokenTable))
 
-        print(k)
+        # removes the duplicates
+        tokenTable = list(OrderedDict.fromkeys(self.tokenTable))
+
+        print(tokenTable)
 
 
 if __name__ == '__main__':
