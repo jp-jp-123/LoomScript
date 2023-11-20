@@ -1,13 +1,15 @@
 # Lexical Analyser for LoomScript
 
 from tokens import *
+from collections import OrderedDict
 import re
 
 
 class Lexer:
 
     def __init__(self):
-        self.stringLiteralBuffer = []   # Buffer array for string literals
+        self.quote = 0  # tracks the number of quotation mark
+        self.stringLiteralBuffer = []  # Buffer array for string literals
         self.stringLiteralBufferActive = False  # Checks if the string literal array buffer is active
         self.tokenTable = []  # table for tokenized lexemes
         self.sourceCode = None  # source code
@@ -31,10 +33,6 @@ class Lexer:
 
     def Tokenizer(self, lexeme: str):
 
-        if ('"' or '\'') in lexeme:
-            self.stringLiteralBufferActive = True
-            self.stringLiteralBuffer.append(lexeme)
-
         # Check if lexeme is a SPECIAL CHARACTER
         if lexeme in SPECIAL_CHARACTERS:
             self.SpecialCharTokenizer(lexeme)
@@ -43,9 +41,17 @@ class Lexer:
         elif lexeme in KEYWORDS:
             self.tokenTable.append((lexeme, "KEYWORD"))
 
-        # Check if lexeme is an IDENTIFIER
+        # Check if lexeme is an IDENTIFIER or a STRING_LITERAL
         elif re.match(r"(?<![\S'])([^'\s]+)(?![\S'])", lexeme):
-            self.tokenTable.append((lexeme, "IDENTIFIER"))
+
+            # if STRING_LITERAL
+            if ('"' or "'") in lexeme:
+                self.stringLiteralBufferActive = True
+                self.StringLiteralTokenizer(lexeme)
+
+            # if IDENTIFIER
+            else:
+                self.tokenTable.append((lexeme, "IDENTIFIER"))
 
         # Check if lexeme is an INT LITERAL
         elif lexeme.isdigit():
@@ -59,21 +65,29 @@ class Lexer:
             self.tokenTable.append((charLexeme, "SPECIAL_CHAR"))
 
     def StringLiteralTokenizer(self, lexeme: str):
-        quote = 0
-        # while quote < 2:
         self.stringLiteralBuffer.append(lexeme)
-        if ('"' or '\'') in lexeme:
-            quote += 1
-            print(quote)
+        if ('"' or "'") in lexeme:
+            self.quote += 1
 
-        if quote == 2:
+        if self.quote == 2:
             string = ' '.join(self.stringLiteralBuffer)
-            self.tokenTable.append((string, "STRING_LITERAL"))
-            self.stringLiteralBufferActive = False
 
+            quotation = string[0]
+            self.SpecialCharTokenizer(quotation)
+
+            full_string = string.strip('"')
+            self.tokenTable.append((full_string, "STRING_LITERAL"))
+
+            quotation = string[-1]
+            self.SpecialCharTokenizer(quotation)
+
+            self.stringLiteralBufferActive = False
+            self.quote = 0
 
     def LexerOutput(self):
-        print(self.tokenTable)
+        k = list(OrderedDict.fromkeys(self.tokenTable))
+
+        print(k)
 
 
 if __name__ == '__main__':

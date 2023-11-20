@@ -1,1 +1,1 @@
-CHAR x = "hello world now"
+INT x = 1 + 5
