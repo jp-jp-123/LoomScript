@@ -1,4 +1,7 @@
 # Lexical Analyser for LoomScript
+'''
+TODO: times where code doesnt have space, ex: b=1+5
+'''
 
 from tokens import *
 from collections import OrderedDict
@@ -38,7 +41,7 @@ class Lexer:
     # Tokenizing the lexemes happens here
     def Tokenizer(self, lexeme: str):
 
-        # Check if lexeme is a SPECIAL CHARACTER
+        # Check if lexeme is a SPECIAL CHARACTER or an OPERATOR
         if lexeme in SPECIAL_CHARACTERS or OPERATORS:
             self.SpecialCharTokenizer(lexeme)
 
@@ -50,6 +53,7 @@ class Lexer:
         elif re.match(r"(?<![\S'])([^'\s]+)(?![\S'])", lexeme):
 
             # if STRING_LITERAL
+            # TODO: single quotation string cant be read
             if ('"' or "'") in lexeme:
                 self.stringLiteralBufferActive = True
                 self.StringLiteralTokenizer(lexeme)
