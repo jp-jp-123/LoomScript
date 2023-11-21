@@ -1,4 +1,4 @@
-# token table for lexer.py
+# token table for lexerLegacy.py
 
 KEYWORDS = {
     "BOOL": "kw",
