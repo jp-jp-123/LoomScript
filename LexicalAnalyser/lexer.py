@@ -1,6 +1,9 @@
 # Lexical Analyser for LoomScript
 '''
-TODO: times where code doesnt have space, ex: b=1+5
+TODO: times where code doesnt have space, ex:
+        b=1+5
+        OUTPUT("x is also less than 15")
+        INPUT("get data")
 '''
 
 from tokens import *
@@ -11,15 +14,21 @@ import re
 class Lexer:
 
     def __init__(self):
+        self.lookAheadFlag = ''
+        self.startInstanceFound = False
+        self.unparsedLexeme = []
         self.quote = 0  # tracks the number of quotation mark
-        self.stringLiteralBuffer = []  # Buffer array for string literals
-        self.singleStringLiteralBufferActive = False    # single quotation string buffer checker
-        self.doubleStringLiteralBufferActive = False    # double quotation string buffer checker
+        self.stringLiteralBuffer = []  # buffer array for string literals
+        self.singleStringLiteralBufferActive = False  # single quotation string buffer checker
+        self.doubleStringLiteralBufferActive = False  # double quotation string buffer checker
+        self.buffer = []
+        self.bufferActive = False
         self.tokenTable = []  # table for tokenized lexemes
         self.sourceCode = None  # source code
 
     # Gets the file to be fed to Lexer
     def SourceToLexemes(self, filepath: str):
+
         with open(filepath) as file:
             self.sourceCode = file.readlines()
 
@@ -29,21 +38,46 @@ class Lexer:
 
             self.LexemeParser(lexemes)
 
+    def CompoundLexemeParser(self, lexemeStr: str):
+        # print("the lexeme: ", lexemeStr)
+        # self.bufferActive = True
+        lexeme = ""
+
+        for char in lexemeStr:
+            # print(char)
+            if char.isalnum() or ('_' in char) or ('"' in char) or ('\'' in char):
+                lexeme += char
+
+            elif char in SPECIAL_CHARACTERS:
+                # print(char)
+                if lexeme:
+                    # print(lexeme)
+                    self.unparsedLexeme.append(lexeme)
+                    lexeme = ""
+                self.unparsedLexeme.append(char)
+
+        if lexeme:
+            # print("entering")
+            self.unparsedLexeme.append(lexeme)
+
     # Parses the line of Lexemes into singular lexeme
     def LexemeParser(self, lexemes: list[str]):
+        self.unparsedLexeme = []
 
         for lexeme in lexemes:
-            # Checks if String Buffer is active
-            if self.singleStringLiteralBufferActive:
-                self.SingleStringLiteralTokenizer(lexeme)
-            elif self.doubleStringLiteralBufferActive:
-                self.DoubleStringLiteralTokenizer(lexeme)
+            if self.bufferActive:
+                self.LookAhead('"', lexeme)
             else:
                 self.Tokenizer(lexeme)
+
+            if self.unparsedLexeme:
+                self.LexemeParser(self.unparsedLexeme)
+                self.unparsedLexeme = []
 
     # Tokenizing the lexemes happens here
     def Tokenizer(self, lexeme: str):
 
+        print(lexeme)
         # Check if lexeme is a SPECIAL CHARACTER or an OPERATOR
         if lexeme in (SPECIAL_CHARACTERS or OPERATORS):
             self.SpecialCharTokenizer(lexeme)
@@ -56,24 +90,20 @@ class Lexer:
         elif lexeme.isdigit():
             self.tokenTable.append((lexeme, "INT_LITERAL"))
 
-        # Check if lexeme is an IDENTIFIER or a STRING_LITERAL
-        elif re.match(r"(?<![\S'])([^'\s]+)(?![\S'])", lexeme) or re.match(r'(?<![\S"])([^"\s]+)(?![\S"])', lexeme):
+        # Check if lexeme is an IDENTIFIER
+        elif lexeme.replace('_', '').isalnum():
+            self.tokenTable.append((lexeme, "IDENTIFIER"))
 
-            # if STRING_LITERAL
-            if '"' in lexeme or '\'' in lexeme:
-                if '"' in lexeme:
-                    self.doubleStringLiteralBufferActive = True
-                    self.DoubleStringLiteralTokenizer(lexeme)
-                else:
-                    self.singleStringLiteralBufferActive = True
-                    self.SingleStringLiteralTokenizer(lexeme)
+        # Check if lexeme is a STRING_LITERAL
+        elif ('"' in lexeme[0] and '"' in lexeme[-1]) or ('\'' in lexeme[0] and '\'' in lexeme[-1]):
+            self.StringLiteralDirector(lexeme)
 
-            # if IDENTIFIER
-            else:
-                self.tokenTable.append((lexeme, "IDENTIFIER"))
-
+        # Check if lexeme can't be tokenized/need more parsing
         else:
-            print(lexeme, "Untokenized")
+            if ('"' in lexeme):
+                self.LookAhead('"', lexeme)
+            else:
+                self.CompoundLexemeParser(lexeme)
 
     # If the lexeme is a special character checks if it is an operator or not
     def SpecialCharTokenizer(self, charLexeme: str):
@@ -83,25 +113,27 @@ class Lexer:
         else:
             self.tokenTable.append((charLexeme, "SPECIAL_CHAR"))
 
+    def StringLiteralDirector(self, lexeme):
+        if '"' in lexeme or '\'' in lexeme:
+            if '"' in lexeme:
+                self.doubleStringLiteralBufferActive = True
+                self.DoubleStringLiteralTokenizer(lexeme)
+            else:
+                self.singleStringLiteralBufferActive = True
+                self.SingleStringLiteralTokenizer(lexeme)
+
     # Tokenizing the string literal happens here
-    def DoubleStringLiteralTokenizer(self, lexeme: str):
+    def DoubleStringLiteralTokenizer(self, lexeme: list[str]):
 
-        # Adds the lexemes to the string buffer while keeping track of quotations passed
-        self.stringLiteralBuffer.append(lexeme)
-        if '"' in lexeme:
-             self.quote += lexeme.count('"')
+        string = ' '.join(lexeme)
 
-        # Turns off the buffer if quotations reached two
-        if self.quote == 2:
-            string = ' '.join(self.stringLiteralBuffer)
+        quotation = string[0]
+        self.SpecialCharTokenizer(quotation)
 
-            quotation = string[0]
-            self.SpecialCharTokenizer(quotation)
+        full_string = string.strip('"')
+        self.tokenTable.append((full_string, "STRING_LITERAL"))
 
-            full_string = string.strip('"')
-            self.tokenTable.append((full_string, "STRING_LITERAL"))
-
-            self.ClearStringLiteralBuffer()
+        self.ClearStringLiteralBuffer()
 
     def SingleStringLiteralTokenizer(self, lexeme: str):
 
@@ -125,8 +157,31 @@ class Lexer:
     def ClearStringLiteralBuffer(self):
 
         self.singleStringLiteralBufferActive = False
+        self.doubleStringLiteralBufferActive = False
         self.stringLiteralBuffer = []
+        self.buffer = []
         self.quote = 0
+
+    def LookAhead(self, flag: str, stack: str):
+
+        self.bufferActive = True
+
+        if flag in stack:
+            if not self.startInstanceFound:
+                self.buffer.append(stack)
+                self.bufferActive = True
+                self.startInstanceFound = True
+            else:
+                self.buffer.append(stack)
+                self.bufferActive = False
+
+        if flag not in stack:
+            self.buffer.append(stack)
+
+        if not self.bufferActive:
+            self.DoubleStringLiteralTokenizer(self.buffer)
+
+        # return self.buffer
 
     # Displays the lexer output
     def LexerOutput(self):
