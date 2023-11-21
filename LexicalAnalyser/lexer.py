@@ -13,7 +13,8 @@ class Lexer:
     def __init__(self):
         self.quote = 0  # tracks the number of quotation mark
         self.stringLiteralBuffer = []  # Buffer array for string literals
-        self.stringLiteralBufferActive = False  # Checks if the string literal array buffer is active
+        self.singleStringLiteralBufferActive = False    # single quotation string buffer checker
+        self.doubleStringLiteralBufferActive = False    # double quotation string buffer checker
         self.tokenTable = []  # table for tokenized lexemes
         self.sourceCode = None  # source code
 
@@ -33,8 +34,10 @@ class Lexer:
 
         for lexeme in lexemes:
             # Checks if String Buffer is active
-            if self.stringLiteralBufferActive:
-                self.StringLiteralTokenizer(lexeme)
+            if self.singleStringLiteralBufferActive:
+                self.SingleStringLiteralTokenizer(lexeme)
+            elif self.doubleStringLiteralBufferActive:
+                self.DoubleStringLiteralTokenizer(lexeme)
             else:
                 self.Tokenizer(lexeme)
 
@@ -49,23 +52,28 @@ class Lexer:
         elif lexeme in KEYWORDS:
             self.tokenTable.append((lexeme, "KEYWORD"))
 
+        # Check if lexeme is an INT LITERAL
+        elif lexeme.isdigit():
+            self.tokenTable.append((lexeme, "INT_LITERAL"))
+
         # Check if lexeme is an IDENTIFIER or a STRING_LITERAL
-        elif re.match(r"(?<![\S'])([^'\s]+)(?![\S'])", lexeme):
+        elif re.match(r"(?<![\S'])([^'\s]+)(?![\S'])", lexeme) or re.match(r'(?<![\S"])([^"\s]+)(?![\S"])', lexeme):
 
             # if STRING_LITERAL
-            # TODO: single quotation string cant be read
-            if ('"' or "'") in lexeme:
-                self.stringLiteralBufferActive = True
-                self.StringLiteralTokenizer(lexeme)
+            if '"' in lexeme or '\'' in lexeme:
+                if '"' in lexeme:
+                    self.doubleStringLiteralBufferActive = True
+                    self.DoubleStringLiteralTokenizer(lexeme)
+                else:
+                    self.singleStringLiteralBufferActive = True
+                    self.SingleStringLiteralTokenizer(lexeme)
 
             # if IDENTIFIER
             else:
                 self.tokenTable.append((lexeme, "IDENTIFIER"))
 
-        # Check if lexeme is an INT LITERAL
-        # TODO: fix the lexeme where ints are identified as IDENTIFIERS
-        elif lexeme.isdigit():
-            self.tokenTable.append((lexeme, "INT_LITERAL"))
+        else:
+            print(lexeme, "Untokenized")
 
     # If the lexeme is a special character checks if it is an operator or not
     def SpecialCharTokenizer(self, charLexeme: str):
@@ -76,13 +84,12 @@ class Lexer:
             self.tokenTable.append((charLexeme, "SPECIAL_CHAR"))
 
     # Tokenizing the string literal happens here
-    def StringLiteralTokenizer(self, lexeme: str):
+    def DoubleStringLiteralTokenizer(self, lexeme: str):
 
         # Adds the lexemes to the string buffer while keeping track of quotations passed
-        # TODO: edge cases for quotations inside quotations exists
         self.stringLiteralBuffer.append(lexeme)
-        if ('"' or "'") in lexeme:
-            self.quote += 1
+        if '"' in lexeme:
+             self.quote += lexeme.count('"')
 
         # Turns off the buffer if quotations reached two
         if self.quote == 2:
@@ -94,11 +101,32 @@ class Lexer:
             full_string = string.strip('"')
             self.tokenTable.append((full_string, "STRING_LITERAL"))
 
-            quotation = string[-1]
+            self.ClearStringLiteralBuffer()
+
+    def SingleStringLiteralTokenizer(self, lexeme: str):
+
+        # Adds the lexemes to the string buffer while keeping track of quotations passed
+        self.stringLiteralBuffer.append(lexeme)
+        if '\'' in lexeme:
+            self.quote += lexeme.count('\'')
+
+        # Turns off the buffer if quotations reached two
+        if self.quote == 2:
+            string = ' '.join(self.stringLiteralBuffer)
+
+            quotation = string[0]
             self.SpecialCharTokenizer(quotation)
 
-            self.stringLiteralBufferActive = False
-            self.quote = 0
+            full_string = string.strip('\'')
+            self.tokenTable.append((full_string, "STRING_LITERAL"))
+
+            self.ClearStringLiteralBuffer()
+
+    def ClearStringLiteralBuffer(self):
+
+        self.singleStringLiteralBufferActive = False
+        self.stringLiteralBuffer = []
+        self.quote = 0
 
     # Displays the lexer output
     def LexerOutput(self):
@@ -106,7 +134,8 @@ class Lexer:
         # removes the duplicates
         tokenTable = list(OrderedDict.fromkeys(self.tokenTable))
 
-        print(tokenTable)
+        for lexeme in tokenTable:
+            print(lexeme)
 
 
 if __name__ == '__main__':
