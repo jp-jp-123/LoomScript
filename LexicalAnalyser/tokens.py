@@ -54,9 +54,14 @@ OPERATORS = {
     '%': "arithmetic_modulo",
     '~': "arithmetic_integer_divide",
     '^': "arithmetic_exponent",
+    '=': "assign_op",
+    '>': "greater_than",
+    '<': "less than",
+}
+
+DOUBLE_OPERATORS = {
     '++': "unary_increment",
     '--': "unary_decrement",
-    '=': "assign_op",
     '+=': "assign_op_add",
     '-=': "assign_op_subtract",
     '*=': "assign_op_multiply",
@@ -65,8 +70,6 @@ OPERATORS = {
     '~=': "assign_op_integer_divide",
     '==': "equal_to",
     '!=': "not_equal_to",
-    '>': "greater_than",
-    '<': "less than",
     '>=': "greater_than_equal",
     '<=': "less_than_equal",
     '!': "NOT_op",

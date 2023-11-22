@@ -39,7 +39,7 @@ class Lexer:
             self.LexemeParser(lexemes)
 
     def CompoundLexemeParser(self, lexemeStr: str):
-        # print("the lexeme: ", lexemeStr)
+        # print("the lexemeBuffer: ", lexemeStr)
         # self.bufferActive = True
         lexeme = ""
 
@@ -51,7 +51,7 @@ class Lexer:
             elif char in SPECIAL_CHARACTERS:
                 # print(char)
                 if lexeme:
-                    # print(lexeme)
+                    # print(lexemeBuffer)
                     self.unparsedLexeme.append(lexeme)
                     lexeme = ""
                 self.unparsedLexeme.append(char)
@@ -60,7 +60,7 @@ class Lexer:
             # print("entering")
             self.unparsedLexeme.append(lexeme)
 
-    # Parses the line of Lexemes into singular lexeme
+    # Parses the line of Lexemes into singular lexemeBuffer
     def LexemeParser(self, lexemes: list[str]):
         self.unparsedLexeme = []
 
@@ -78,34 +78,34 @@ class Lexer:
     def Tokenizer(self, lexeme: str):
 
         print(lexeme)
-        # Check if lexeme is a SPECIAL CHARACTER or an OPERATOR
+        # Check if lexemeBuffer is a SPECIAL CHARACTER or an OPERATOR
         if lexeme in (SPECIAL_CHARACTERS or OPERATORS):
             self.SpecialCharTokenizer(lexeme)
 
-        # Check if lexeme is a KEYWORD
+        # Check if lexemeBuffer is a KEYWORD
         elif lexeme in KEYWORDS:
             self.tokenTable.append((lexeme, "KEYWORD"))
 
-        # Check if lexeme is an INT LITERAL
+        # Check if lexemeBuffer is an INT LITERAL
         elif lexeme.isdigit():
             self.tokenTable.append((lexeme, "INT_LITERAL"))
 
-        # Check if lexeme is an IDENTIFIER
+        # Check if lexemeBuffer is an IDENTIFIER
         elif lexeme.replace('_', '').isalnum():
             self.tokenTable.append((lexeme, "IDENTIFIER"))
 
-        # Check if lexeme is a STRING_LITERAL
+        # Check if lexemeBuffer is a STRING_LITERAL
         elif ('"' in lexeme[0] and '"' in lexeme[-1]) or ('\'' in lexeme[0] and '\'' in lexeme[-1]):
             self.StringLiteralDirector(lexeme)
 
-        # Check if lexeme can't be tokenized/need more parsing
+        # Check if lexemeBuffer can't be tokenized/need more parsing
         else:
             if ('"' in lexeme):
                 self.LookAhead('"', lexeme)
             else:
                 self.CompoundLexemeParser(lexeme)
 
-    # If the lexeme is a special character checks if it is an operator or not
+    # If the lexemeBuffer is a special character checks if it is an operator or not
     def SpecialCharTokenizer(self, charLexeme: str):
 
         if charLexeme in OPERATORS:
