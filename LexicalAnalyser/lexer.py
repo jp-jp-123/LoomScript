@@ -85,6 +85,7 @@ class Lexer:
 
                 # Puts the special char in the buffer waiting for the following chars
                 else:
+                    # if the special chars has doubles, add to buffer
                     if self.specialCharBuffer or char in DOUBLES:
                         self.specialCharBuffer += char
                     else:
