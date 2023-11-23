@@ -1,7 +1,13 @@
 from tokens import *
 from charset import *
 from collections import OrderedDict
-import re
+
+'''
+TODO:   Decimal parsing
+        Comment parsing
+        Lexical Error Handling
+
+'''
 
 
 class Lexer:
@@ -10,12 +16,14 @@ class Lexer:
         self.tokenTable = []
         self.sourceCode = None
 
-        self.buffer = []
-
         self.lexemeBuffer = ''
         self.specialCharBuffer = ''
 
         self.stopFlag = False
+        self.stopFlagValue = ''
+
+        self.lineNo = 1
+        self.charNo = 0
 
     def SourceToLexemes(self, filepath: str):
 
@@ -32,70 +40,93 @@ class Lexer:
 
         for char in lexemes:
 
-            # Mainly checks for identifiers, includes _ since it is a valid char for naming
-            if (char.isalnum() or char == '_') and not self.stopFlag:
+            # Char no. tracking
+            self.charNo += 1
 
-                self.lexemeBuffer += char
+            # Line no. tacking
+            if char == '\n':
+                self.lineNo += 1
+                self.charNo = 0
 
-                # Tokenizes the special buffer. This just means that the special char is a lexeme by itself
-                # and the special char can be tokenized now
-                if self.specialCharBuffer:
-                    self.Tokenizer(self.specialCharBuffer)
-                    self.BufferClear('spc')
+            if not self.stopFlag:
+                # Mainly checks for identifiers, includes _ since it is a valid char for naming
+                if char.isalnum() or char == '_':
 
-            # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
-            elif char.isspace() and not self.stopFlag:
-                if self.lexemeBuffer or self.specialCharBuffer:
+                    self.lexemeBuffer += char
 
-                    # if a special buffer is found isolated in whitespaces, it is a single token
+                    # Tokenizes the special buffer. This just means that the special char is a lexeme by itself
+                    # and the special char can be tokenized now
                     if self.specialCharBuffer:
                         self.Tokenizer(self.specialCharBuffer)
-                    else:
-                        self.Tokenizer(self.lexemeBuffer)
-                self.BufferClear()
-
-            # Takes the special chars
-            elif char in SPECIAL_CHARACTERS:
-
-                # If a special char is hit after taking an alphanum, it means it is a separate token
-                # ex: 1+ (1 gets tokenized, + goes to buffer)
-                if self.lexemeBuffer:
-                    self.Tokenizer(self.lexemeBuffer)
-                    self.BufferClear('lxm')
-
-                # Checks the start and end of STRING_LITERAL
-                if char == '"' or char == '\'':
-                    if char == '"':
-                        # flips stopFlag value, necessary to collect ALL the chars inside the string into the buffer
-                        self.stopFlag = not self.stopFlag
-                        self.specialCharBuffer += char
-
-                        # if stopFlag is detected to be false, string has reached its end and can be tokenized
-                        if not self.stopFlag:
-                            self.specialCharBuffer += char
-                            self.Tokenizer(self.specialCharBuffer)
-                            self.BufferClear('spc')
-                    else:
-                        self.stopFlag = not self.stopFlag
-                        self.specialCharBuffer += char
-                        if not self.stopFlag:
-                            self.specialCharBuffer += char
-                            self.Tokenizer(self.specialCharBuffer)
-                            self.BufferClear('spc')
-
-                # Puts the special char in the buffer waiting for the following chars
-                else:
-                    # if the special chars has doubles, add to buffer
-                    if self.specialCharBuffer or char in DOUBLES:
-                        self.specialCharBuffer += char
-                    else:
-                        self.specialCharBuffer += char
-                        self.Tokenizer(self.specialCharBuffer)
                         self.BufferClear('spc')
+
+                    if char == lexemes[-1]:
+                        self.Tokenizer(self.lexemeBuffer)
+
+                # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
+                elif char.isspace():
+                    if self.lexemeBuffer or self.specialCharBuffer:
+
+                        # if a special buffer is found isolated in whitespaces, it is a single token
+                        if self.specialCharBuffer:
+                            self.Tokenizer(self.specialCharBuffer)
+                        else:
+                            self.Tokenizer(self.lexemeBuffer)
+                    self.BufferClear()
+
+                # Takes the special chars
+                elif char in SPECIAL_CHARACTERS:
+
+                    # If a special char is hit after taking an alphanum, it means it is a separate token
+                    # ex: 1+ (1 gets tokenized, + goes to buffer)
+                    if self.lexemeBuffer:
+                        self.Tokenizer(self.lexemeBuffer)
+                        self.BufferClear('lxm')
+
+                    # Checks the start and end of STRING_LITERAL
+                    if char == '"' or char == '\'':
+                        if char == '"':
+
+                            # Checks if special char buffer contains anything, tokenizes it and clears buffer
+                            if self.specialCharBuffer:
+                                self.Tokenizer(self.specialCharBuffer)
+                                self.BufferClear('spc')
+
+                            # flips stopFlag value, necessary to collect ALL the chars inside the string into the buffer
+                            self.stopFlag = not self.stopFlag
+                            self.stopFlagValue = '"'
+                            self.specialCharBuffer += char
+
+                        else:
+                            if self.specialCharBuffer:
+                                self.Tokenizer(self.specialCharBuffer)
+                                self.BufferClear('spc')
+                            self.stopFlag = not self.stopFlag
+                            self.stopFlagValue = '\''
+                            self.specialCharBuffer += char
+
+                    # Puts the special char in the buffer waiting for the following chars
+                    else:
+
+                        # if the special char has doubles, add to buffer
+                        if self.specialCharBuffer or char in DOUBLES:
+                            self.specialCharBuffer += char
+
+                        # if the special char is not a double, tokenizes char
+                        else:
+                            self.Tokenizer(char)
+                            self.BufferClear('spc')
+
+                else:
+                    print(f'Unidentified Token at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
 
             # if stopFlag value is true, and is not a char, adds to the special char buffer
             else:
                 self.specialCharBuffer += char
+                if char == self.stopFlagValue:
+                    self.stopFlag = not self.stopFlag
+                    self.Tokenizer(self.specialCharBuffer)
+                    self.BufferClear('spc')
 
     def Tokenizer(self, lexeme):
 
@@ -109,7 +140,7 @@ class Lexer:
 
         # Check if lexemeBuffer is an INT LITERAL
         elif lexeme.isdigit():
-            self.tokenTable.append((lexeme, "INT_LITERAL"))
+            self.tokenTable.append((lexeme, "NUM_LITERAL"))
 
         # Check if lexemeBuffer is an IDENTIFIER
         elif lexeme.replace('_', '').isalnum():

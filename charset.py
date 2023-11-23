@@ -4,7 +4,7 @@ LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
 
 DIGITS = "0123456789"
 
-SPECIAL_CHARACTERS = {
+SPECIAL_CHARSET = {
     '.': "period",
     '+': "plus",
     '-': "hyphen",
