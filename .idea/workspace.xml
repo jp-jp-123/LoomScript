@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="added string_literal tokenizer for lexer.py">
+    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="added comments parser">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LexicalAnalyser/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/test.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/charset.py" beforeDir="false" afterPath="$PROJECT_DIR$/charset.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +147,14 @@
       <option name="project" value="LOCAL" />
       <updated>1700704584154</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="added comments parser">
+      <created>1700720154139</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1700720154139</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -160,7 +168,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Improving_Lexer" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -177,6 +185,18 @@
     <MESSAGE value="Improving the lexer" />
     <MESSAGE value="lexer by char" />
     <MESSAGE value="added string_literal tokenizer for lexer.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="added string_literal tokenizer for lexer.py" />
+    <MESSAGE value="added comments parser" />
+    <option name="LAST_COMMIT_MESSAGE" value="added comments parser" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/LexicalAnalyser/lexer.py</url>
+          <line>39</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

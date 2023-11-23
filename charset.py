@@ -4,6 +4,8 @@ LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
 
 DIGITS = "0123456789"
 
+NOT_IN_DECIMAL = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" + ' '
+
 SPECIAL_CHARSET = {
     '.': "period",
     '+': "plus",

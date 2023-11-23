@@ -5,7 +5,6 @@ from collections import OrderedDict
 '''
 TODO:   Decimal parsing
         Lexical Error Handling
-
 '''
 
 
@@ -21,7 +20,6 @@ class Lexer:
         self.stopFlag = False
         self.stopFlagValue = ''
         self.nonLexeme = False
-        self.commentFlag = '//'
 
         self.lineNo = 1
         self.charNo = 0
@@ -53,16 +51,35 @@ class Lexer:
                 # Mainly checks for identifiers, includes _ since it is a valid char for naming
                 if char.isalnum() or char == '_':
 
-                    self.lexemeBuffer += char
-
                     # Tokenizes the special buffer. This just means that the special char is a lexeme by itself
-                    # and the special char can be tokenized now
+                    # and the special char can be tokenized now. Ex: +1
                     if self.specialCharBuffer:
                         self.Tokenizer(self.specialCharBuffer)
                         self.BufferClear('spc')
 
+                    # Checks if the lexemeBuffer has contents and its first char
+                    # Alphabet first char allows every character
+                    # Digit first char only allows numbers, invalid lexeme otherwise. Also serves as LH of float
+                    if self.lexemeBuffer:
+                        if self.lexemeBuffer[0].isalpha():
+                            self.lexemeBuffer += char
+
+                        elif self.lexemeBuffer[0].isdigit():
+                            if char.isdigit():
+                                self.lexemeBuffer += char
+                            else:
+                                print("TOKEN NOT VALID")
+
+                        else:
+                            print("Undetermined Lexer Error")
+
+                    # This just means that lexemeBuffer is empty and will accept any char
+                    else:
+                        self.lexemeBuffer += char
+
                     if char == lexemes[-1]:
                         self.Tokenizer(self.lexemeBuffer)
+                        self.BufferClear('lxm')
 
                 # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
                 elif char.isspace():
@@ -80,11 +97,11 @@ class Lexer:
 
                     # If a special char is hit after taking an alphanum, it means it is a separate token
                     # ex: 1+ (1 gets tokenized, + goes to buffer)
-                    if self.lexemeBuffer:
+                    if self.lexemeBuffer and char != '.':
                         self.Tokenizer(self.lexemeBuffer)
                         self.BufferClear('lxm')
 
-                    # Checks the start and end of STRING_LITERAL
+                    # Checks the start for STRING_LITERAL
                     if char == '"' or char == '\'':
                         if char == '"':
 
@@ -116,7 +133,18 @@ class Lexer:
                         self.stopFlagValue = '//'
                         self.nonLexeme = not self.nonLexeme
                         self.specialCharBuffer += char
-                        print(self.specialCharBuffer)
+
+                    # Checks the start for decimal
+                    if char == '.':
+
+                        # Checks if special char buffer contains anything, tokenizes it and clears buffer
+                        if self.specialCharBuffer:
+                            self.Tokenizer(self.specialCharBuffer)
+                            self.BufferClear('spc')
+
+                        self.stopFlag = not self.stopFlag
+                        self.stopFlagValue = NOT_IN_DECIMAL
+                        self.specialCharBuffer += char
 
                     # Puts the special char in the buffer waiting for the following chars
                     else:
@@ -136,17 +164,16 @@ class Lexer:
             # if stopFlag value is true, and is not a char, adds to the special char buffer
             else:
                 self.specialCharBuffer += char
-
                 # Checks if it encounters a stop value (for lexemes that require single char to end) or
                 # if the last 2 chars is a stop value (for comments e.g., //)
-                if (char == self.stopFlagValue) or (self.specialCharBuffer[-2:] == self.stopFlagValue):
+                if char == self.stopFlagValue or char in self.stopFlagValue:
 
                     # Since stop value has been satisfied, stop flag is lifted
                     self.stopFlag = not self.stopFlag
 
                     # Check if the collected is a lexeme
                     if not self.nonLexeme:
-                        if '"' or '\'' == (self.specialCharBuffer[0] and self.specialCharBuffer[-1]):
+                        if (('"' or '\'') == self.specialCharBuffer[0]) and (('"' or '\'') == self.specialCharBuffer[-1]):
 
                             # Tokenize the opening quote
                             self.Tokenizer(self.specialCharBuffer[0])
@@ -156,6 +183,34 @@ class Lexer:
 
                             # Tokenize the closing quote
                             self.Tokenizer(self.specialCharBuffer[-1])
+
+                            self.BufferClear('spc')
+
+                        # If it is a decimal, specialCharBuffer should start with decimal
+                        elif '.' == self.specialCharBuffer[0]:
+
+                            # Since the stop value is already appended, we remove from the original string
+                            # and re-assign it
+                            lastChar = self.specialCharBuffer[-1]
+                            self.specialCharBuffer = self.specialCharBuffer[:-1]
+
+                            # If lexemesBuffer contains a left-hand side, join them and tokenize
+                            if self.lexemeBuffer and self.lexemeBuffer.isdigit():
+                                self.lexemeBuffer += self.specialCharBuffer
+                                self.Tokenizer(self.lexemeBuffer)
+                                self.BufferClear()
+
+                            else:
+                                self.Tokenizer(self.specialCharBuffer)
+                                self.BufferClear()
+
+                            # if the lastChar is not a space, add to buffer, ignore otherwise
+                            if not lastChar.isspace():
+                                self.specialCharBuffer += lastChar
+
+                elif self.specialCharBuffer[-2:] == self.stopFlagValue:
+
+                    self.stopFlag = not self.stopFlag
 
                     # If it is a non-lexeme (ex. Comments), flips non lexeme bool but won't be tokenized
                     if self.specialCharBuffer[-2:] == self.stopFlagValue:
@@ -174,7 +229,7 @@ class Lexer:
             self.tokenTable.append((lexeme, "KEYWORD"))
 
         # Check if lexemeBuffer is an INT LITERAL
-        elif lexeme.replace('_', '').isdigit():
+        elif lexeme.replace('.', '').isdigit():
             self.tokenTable.append((lexeme, "NUM_LITERAL"))
 
         # Check if lexemeBuffer is an IDENTIFIER

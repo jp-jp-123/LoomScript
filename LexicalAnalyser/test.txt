@@ -1,6 +1,2 @@
-n = 2+2
-
-IF (n && 4){
-    // this is a comment //
-    OUTPUT("hello world")
-}
+d = 1.0002 + 2
+k = "hello world"
