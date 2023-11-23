@@ -4,7 +4,6 @@ from collections import OrderedDict
 
 '''
 TODO:   Decimal parsing
-        Comment parsing
         Lexical Error Handling
 
 '''
@@ -21,6 +20,8 @@ class Lexer:
 
         self.stopFlag = False
         self.stopFlagValue = ''
+        self.nonLexeme = False
+        self.commentFlag = '//'
 
         self.lineNo = 1
         self.charNo = 0
@@ -87,7 +88,7 @@ class Lexer:
                     if char == '"' or char == '\'':
                         if char == '"':
 
-                            # Checks if special char buffer contains anything, tokenizes it and clears buffer
+                            # Checks if special char buffer contains anything, tokenizes it first then clears buffer
                             if self.specialCharBuffer:
                                 self.Tokenizer(self.specialCharBuffer)
                                 self.BufferClear('spc')
@@ -98,12 +99,24 @@ class Lexer:
                             self.specialCharBuffer += char
 
                         else:
+
+                            # Checks if special char buffer contains anything, tokenizes it and clears buffer
                             if self.specialCharBuffer:
                                 self.Tokenizer(self.specialCharBuffer)
                                 self.BufferClear('spc')
+
+                            # flips stopFlag value, necessary to collect ALL the chars inside the string into the buffer
                             self.stopFlag = not self.stopFlag
                             self.stopFlagValue = '\''
                             self.specialCharBuffer += char
+
+                    # Checks if it hits a comment syntax, collects everything inside
+                    if char == '/' and self.specialCharBuffer == '/':
+                        self.stopFlag = not self.stopFlag
+                        self.stopFlagValue = '//'
+                        self.nonLexeme = not self.nonLexeme
+                        self.specialCharBuffer += char
+                        print(self.specialCharBuffer)
 
                     # Puts the special char in the buffer waiting for the following chars
                     else:
@@ -123,9 +136,31 @@ class Lexer:
             # if stopFlag value is true, and is not a char, adds to the special char buffer
             else:
                 self.specialCharBuffer += char
-                if char == self.stopFlagValue:
+
+                # Checks if it encounters a stop value (for lexemes that require single char to end) or
+                # if the last 2 chars is a stop value (for comments e.g., //)
+                if (char == self.stopFlagValue) or (self.specialCharBuffer[-2:] == self.stopFlagValue):
+
+                    # Since stop value has been satisfied, stop flag is lifted
                     self.stopFlag = not self.stopFlag
-                    self.Tokenizer(self.specialCharBuffer)
+
+                    # Check if the collected is a lexeme
+                    if not self.nonLexeme:
+                        if '"' or '\'' == (self.specialCharBuffer[0] and self.specialCharBuffer[-1]):
+
+                            # Tokenize the opening quote
+                            self.Tokenizer(self.specialCharBuffer[0])
+
+                            # No need to call the tokenizer, understood to be a string_literal
+                            self.tokenTable.append((self.specialCharBuffer[2:-1], "STRING_LITERAL"))
+
+                            # Tokenize the closing quote
+                            self.Tokenizer(self.specialCharBuffer[-1])
+
+                    # If it is a non-lexeme (ex. Comments), flips non lexeme bool but won't be tokenized
+                    if self.specialCharBuffer[-2:] == self.stopFlagValue:
+                        self.nonLexeme = not self.nonLexeme
+
                     self.BufferClear('spc')
 
     def Tokenizer(self, lexeme):
@@ -139,15 +174,12 @@ class Lexer:
             self.tokenTable.append((lexeme, "KEYWORD"))
 
         # Check if lexemeBuffer is an INT LITERAL
-        elif lexeme.isdigit():
+        elif lexeme.replace('_', '').isdigit():
             self.tokenTable.append((lexeme, "NUM_LITERAL"))
 
         # Check if lexemeBuffer is an IDENTIFIER
         elif lexeme.replace('_', '').isalnum():
             self.tokenTable.append((lexeme, "IDENTIFIER"))
-
-        elif ('"' in lexeme[0]) or ('\'' in lexeme[0]):
-            self.tokenTable.append((lexeme, "STRING_LITERAL"))
 
         else:
             self.tokenTable.append((lexeme, "unidentified"))

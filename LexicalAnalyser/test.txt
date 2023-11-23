@@ -1,5 +1,6 @@
 n = 2+2
 
-IF (n == 4){
-    OUTPUT("Hello World")
+IF (n && 4){
+    // this is a comment //
+    OUTPUT("hello world")
 }

@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="added string_literal tokenizer for lexer.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/test.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
