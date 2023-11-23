@@ -1,4 +1,4 @@
-# token table for lexer.py
+# token table for lexerLegacy.py
 
 KEYWORDS = {
     "BOOL": "kw",
@@ -39,6 +39,8 @@ SPECIAL_CHARACTERS = {
     ')': "close_parenthesis",
     '[': "open_square_bracket",
     ']': "close_square_bracket",
+    '{': "open_curly_bracket",
+    '}': "close_curly_bracket",
     '_': "underscore",
     '^': "caret",
     '~': "tilde",
@@ -54,9 +56,14 @@ OPERATORS = {
     '%': "arithmetic_modulo",
     '~': "arithmetic_integer_divide",
     '^': "arithmetic_exponent",
+    '=': "assign_op",
+    '>': "greater_than",
+    '<': "less than",
+}
+
+DOUBLE_OPERATORS = {
     '++': "unary_increment",
     '--': "unary_decrement",
-    '=': "assign_op",
     '+=': "assign_op_add",
     '-=': "assign_op_subtract",
     '*=': "assign_op_multiply",
@@ -65,8 +72,6 @@ OPERATORS = {
     '~=': "assign_op_integer_divide",
     '==': "equal_to",
     '!=': "not_equal_to",
-    '>': "greater_than",
-    '<': "less than",
     '>=': "greater_than_equal",
     '<=': "less_than_equal",
     '!': "NOT_op",

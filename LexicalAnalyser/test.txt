@@ -1,10 +1,5 @@
-x = 10
+n = 2+2
 
-if x > 5:
-    OUTPUT("x is greater than 5")
-    if x < 15:
-        OUTPUT("x is also less than 15")
-    else:
-        OUTPUT("x is greater than or equal to 15")
-else:
-    OUTPUT("x is less than or equal to 5")
+IF (n == 4){
+    OUTPUT("Hello World")
+}
