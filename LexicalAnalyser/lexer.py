@@ -3,6 +3,7 @@ from charset import *
 from collections import OrderedDict
 import re
 
+
 class Lexer:
 
     def __init__(self):
@@ -32,44 +33,73 @@ class Lexer:
         for char in lexemes:
 
             # Mainly checks for identifiers, includes _ since it is a valid char for naming
-            if char.isalnum() or char == '_':
+            if (char.isalnum() or char == '_') and not self.stopFlag:
 
                 self.lexemeBuffer += char
 
-                # Tokenizes in both buffers. This just means that the special chars and alphanums are separated
+                # Tokenizes the special buffer. This just means that the special char is a lexeme by itself
+                # and the special char can be tokenized now
                 if self.specialCharBuffer:
                     self.Tokenizer(self.specialCharBuffer)
-                    self.Tokenizer(self.lexemeBuffer)
-                    self.BufferClear()
+                    self.BufferClear('spc')
 
             # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
-            elif char.isspace():
-                if not self.lexemeBuffer.isspace() and (self.lexemeBuffer or self.specialCharBuffer):
+            elif char.isspace() and not self.stopFlag:
+                if self.lexemeBuffer or self.specialCharBuffer:
 
                     # if a special buffer is found isolated in whitespaces, it is a single token
                     if self.specialCharBuffer:
-                        self.lexemeBuffer = self.specialCharBuffer
-                    self.Tokenizer(self.lexemeBuffer)
-                self.stopFlag = False
+                        self.Tokenizer(self.specialCharBuffer)
+                    else:
+                        self.Tokenizer(self.lexemeBuffer)
                 self.BufferClear()
 
             # Takes the special chars
             elif char in SPECIAL_CHARACTERS:
 
-                # If special char is hit after taking an alphanum, it means it is a separate token
-                if not self.stopFlag:
-                    self.stopFlag = True
-                    if len(self.lexemeBuffer) != 0:
-                        self.Tokenizer(self.lexemeBuffer)
-                        self.BufferClear()
+                # If a special char is hit after taking an alphanum, it means it is a separate token
+                # ex: 1+ (1 gets tokenized, + goes to buffer)
+                if self.lexemeBuffer:
+                    self.Tokenizer(self.lexemeBuffer)
+                    self.BufferClear('lxm')
 
-                # Puts the special char in the buffer waiting if a double operator is available, if not, gets tokenized
+                # Checks the start and end of STRING_LITERAL
+                if char == '"' or char == '\'':
+                    if char == '"':
+                        # flips stopFlag value, necessary to collect ALL the chars inside the string into the buffer
+                        self.stopFlag = not self.stopFlag
+                        self.specialCharBuffer += char
+
+                        # if stopFlag is detected to be false, string has reached its end and can be tokenized
+                        if not self.stopFlag:
+                            self.specialCharBuffer += char
+                            self.Tokenizer(self.specialCharBuffer)
+                            self.BufferClear('spc')
+                    else:
+                        self.stopFlag = not self.stopFlag
+                        self.specialCharBuffer += char
+                        if not self.stopFlag:
+                            self.specialCharBuffer += char
+                            self.Tokenizer(self.specialCharBuffer)
+                            self.BufferClear('spc')
+
+                # Puts the special char in the buffer waiting for the following chars
+                else:
+                    if self.specialCharBuffer or char in DOUBLES:
+                        self.specialCharBuffer += char
+                    else:
+                        self.specialCharBuffer += char
+                        self.Tokenizer(self.specialCharBuffer)
+                        self.BufferClear('spc')
+
+            # if stopFlag value is true, and is not a char, adds to the special char buffer
+            else:
                 self.specialCharBuffer += char
 
     def Tokenizer(self, lexeme):
 
         # Check if lexemeBuffer is a SPECIAL CHARACTER or an OPERATOR
-        if lexeme in (DOUBLE_OPERATORS or OPERATORS or SPECIAL_CHARACTERS):
+        if (lexeme in DOUBLE_OPERATORS) or (lexeme in OPERATORS) or (lexeme in SPECIAL_CHARACTERS):
             self.SpecialCharTokenizer(lexeme)
 
         # Check if lexemeBuffer is a KEYWORD
@@ -84,12 +114,22 @@ class Lexer:
         elif lexeme.replace('_', '').isalnum():
             self.tokenTable.append((lexeme, "IDENTIFIER"))
 
+        elif ('"' in lexeme[0]) or ('\'' in lexeme[0]):
+            self.tokenTable.append((lexeme, "STRING_LITERAL"))
+
         else:
             self.tokenTable.append((lexeme, "unidentified"))
 
-    def BufferClear(self):
-        self.lexemeBuffer = ''
-        self.specialCharBuffer = ''
+    def BufferClear(self, clear='all'):
+
+        if clear == 'lxm':
+            self.lexemeBuffer = ''
+        elif clear == 'spc':
+            self.specialCharBuffer = ''
+        else:
+            self.lexemeBuffer = ''
+            self.specialCharBuffer = ''
+
     def SpecialCharTokenizer(self, charLexeme: str):
 
         if charLexeme in DOUBLE_OPERATORS:
@@ -100,19 +140,6 @@ class Lexer:
 
         else:
             self.tokenTable.append((charLexeme, "SPECIAL_CHAR"))
-
-    def Lookahead(self, inputStr: str, flag: str, peekLenght: int):
-
-        lookaheadBuffer = []
-        index = 0
-
-        while index + peekLenght < len(inputStr) and flag != inputStr[index]:
-
-            lookaheadBuffer.append(inputStr[index])
-
-            index += 1
-
-        return lookaheadBuffer
 
     def LexerOutput(self):
 

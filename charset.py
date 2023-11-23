@@ -30,3 +30,16 @@ SPECIAL_CHARACTERS = {
     '&': "ampersand",
     ' ': "space"
 }
+
+DOUBLES = {
+    '+': "arithmetic_add",
+    '-': "arithmetic_subtract",
+    '*': "arithmetic_multiply",
+    '/': "arithmetic_divide",
+    '%': "arithmetic_modulo",
+    '~': "arithmetic_integer_divide",
+    '^': "arithmetic_exponent",
+    '=': "assign_op",
+    '>': "greater_than",
+    '<': "less than",
+}

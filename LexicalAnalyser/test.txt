@@ -1,1 +1,4 @@
-NUM k_var= 1&&2
+num = 1
+IF (num == 1){
+    OUTPUT("hello")
+}
