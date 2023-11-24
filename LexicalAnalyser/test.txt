@@ -1,2 +1,2 @@
-d = 1.0002 + 2
-k = "hello world"
+//multiline
+comment//

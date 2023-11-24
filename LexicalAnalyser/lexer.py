@@ -23,6 +23,7 @@ class Lexer:
 
         self.lineNo = 1
         self.charNo = 0
+        self.lineLength = 0
 
     def SourceToLexemes(self, filepath: str):
 
@@ -32,7 +33,7 @@ class Lexer:
         # Feeds file to parser by line
         for perLine in self.sourceCode:
             # print(perLine)
-
+            self.lineLength = len(perLine)
             self.LexemeParser(perLine)
 
     def LexemeParser(self, lexemes: str):
@@ -69,6 +70,8 @@ class Lexer:
                                 self.lexemeBuffer += char
                             else:
                                 print("TOKEN NOT VALID")
+                                print(f'Unidentified Token at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
+                                break
 
                         else:
                             print("Undetermined Lexer Error")
@@ -161,12 +164,14 @@ class Lexer:
                 else:
                     print(f'Unidentified Token at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
 
-            # if stopFlag value is true, and is not a char, adds to the special char buffer
+            # if stopFlag value is true, adds to the special char buffer
             else:
                 self.specialCharBuffer += char
+
                 # Checks if it encounters a stop value (for lexemes that require single char to end) or
-                # if the last 2 chars is a stop value (for comments e.g., //)
-                if char == self.stopFlagValue or char in self.stopFlagValue:
+                # if the last 2 chars is a stop value (for comments e.g., //) or
+                # if it reaches the end of line without matching a stop flag (will result in error)
+                if char == self.stopFlagValue or char in self.stopFlagValue or self.charNo == self.lineLength:
 
                     # Since stop value has been satisfied, stop flag is lifted
                     self.stopFlag = not self.stopFlag
@@ -191,8 +196,11 @@ class Lexer:
 
                             # Since the stop value is already appended, we remove from the original string
                             # and re-assign it
-                            lastChar = self.specialCharBuffer[-1]
-                            self.specialCharBuffer = self.specialCharBuffer[:-1]
+                            lastChar = ''
+
+                            if not self.specialCharBuffer[-1].isdigit():
+                                lastChar = self.specialCharBuffer[-1]
+                                self.specialCharBuffer = self.specialCharBuffer[:-1]
 
                             # If lexemesBuffer contains a left-hand side, join them and tokenize
                             if self.lexemeBuffer and self.lexemeBuffer.isdigit():
@@ -207,6 +215,9 @@ class Lexer:
                             # if the lastChar is not a space, add to buffer, ignore otherwise
                             if not lastChar.isspace():
                                 self.specialCharBuffer += lastChar
+
+                        else:
+                            print(self.specialCharBuffer)
 
                 elif self.specialCharBuffer[-2:] == self.stopFlagValue:
 
