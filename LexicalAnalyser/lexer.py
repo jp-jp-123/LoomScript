@@ -67,7 +67,7 @@ class Lexer:
                             if char.isdigit():
                                 self.lexemeBuffer += char
                             else:
-                                # We allow to add the illegal start of identifier but we will tokenize as TOKEN_ERROR
+                                # We allow to add the illegal start of identifier, but we will tokenize as TOKEN_ERROR
                                 # later
                                 print(f'Illegal Character at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
                                 self.lexemeBuffer += char
