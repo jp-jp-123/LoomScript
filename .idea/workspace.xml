@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="fixed decimal parse bug&#10;(not tokenizing when the last character is EOL)">
+    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LexicalAnalyser/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/test.txt" afterDir="false" />
@@ -172,7 +172,14 @@
       <option name="project" value="LOCAL" />
       <updated>1700792836374</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)">
+      <created>1701080613505</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1701080613505</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -206,7 +213,8 @@
     <MESSAGE value="added comments parser" />
     <MESSAGE value="added decimal parser" />
     <MESSAGE value="fixed decimal parse bug&#10;(not tokenizing when the last character is EOL)" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed decimal parse bug&#10;(not tokenizing when the last character is EOL)" />
+    <MESSAGE value="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

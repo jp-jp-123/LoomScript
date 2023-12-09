@@ -1,6 +1,2 @@
-test = 2.50
-//comment//
-//multiline
-comment//
-p = "string"
-t = 2.56
+1var = 1
+IF s + 1
