@@ -1,0 +1,4 @@
+//test for unclosed string//
+
+tst_str = "test string
+path1 = 2.5
