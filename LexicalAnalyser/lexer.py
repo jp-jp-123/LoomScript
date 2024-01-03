@@ -3,7 +3,7 @@ from charset import *
 from collections import OrderedDict
 
 '''
-TODO:   Lexical Error Handling
+TODO:   Fix Broken Comment bug
 '''
 
 
@@ -148,6 +148,12 @@ class Lexer:
                         self.stopFlagValue = NOT_IN_DECIMAL
                         self.specialCharBuffer += char
 
+                        # if decimal found to be at EOL (ex: d = 2.) join both buffers and tokenize
+                        if self.charNo == self.lineLength:
+                            self.lexemeBuffer += self.specialCharBuffer
+                            self.Tokenizer(self.lexemeBuffer)
+                            self.BufferClear()
+
                     # Puts the special char in the buffer waiting for the following chars
                     else:
 
@@ -181,6 +187,8 @@ class Lexer:
                 # Checks if it encounters a stop value (for lexemes that require single char to end) or
                 # if the last 2 chars is a stop value (for comments e.g., //) or
                 # if it reaches the end of line without matching a stop flag (will result in error)
+
+                # String Checker
                 if char == self.stopFlagValue:
 
                     if self.specialCharBuffer[-2] == "\\":
@@ -217,10 +225,12 @@ class Lexer:
                     self.BufferClear('spc')
 
                 # Decimal/Float Literal Checker
-                elif (char in self.stopFlagValue or self.charNo == self.lineLength) and '.' == self.specialCharBuffer[
-                    0]:
+                elif ((char in self.stopFlagValue or self.charNo == self.lineLength) and '.' == self.specialCharBuffer[
+                    0]) or (char == '.' and self.charNo == self.lineLength):
                     # Since stop value has been satisfied, stop flag is lifted
                     self.stopFlag = not self.stopFlag
+
+                    print("in here")
 
                     # If it is a decimal, specialCharBuffer should start with decimal
                     # Since the stop value is already appended, we remove from the original string
@@ -244,6 +254,11 @@ class Lexer:
                     # if the lastChar is not a space, add to buffer, ignore otherwise
                     if not lastChar.isspace():
                         self.specialCharBuffer += lastChar
+
+                # if it reaches EOL without stop flag, tokenize and emit error token, usually for unclosed string
+                elif self.charNo == self.lineLength:
+                    self.Tokenizer(self.specialCharBuffer)
+                    self.BufferClear('spc')
 
                 else:
                     pass
@@ -305,5 +320,5 @@ class Lexer:
 
 if __name__ == '__main__':
     lxc = Lexer()
-    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\LexicalAnalyser\\test.txt")
+    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test2.txt")
     lxc.LexerOutput()

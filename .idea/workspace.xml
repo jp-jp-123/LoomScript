@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)&#10;added lexer error handling">
+      <change afterPath="$PROJECT_DIR$/TestCase/test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TestCase/test1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TestCase/test2.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/test.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/tokens.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/tokens.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +19,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -34,20 +39,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/Lenovo/Documents/GitHub/LoomScript",
+    "settings.editor.selected.configurable": "configurable.group.tools"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript\TestCase" />
       <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript\LexicalAnalyser" />
     </key>
   </component>
@@ -186,7 +194,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702082366589</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)&#10;added lexer error handling">
+      <created>1702134659842</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1702134659842</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -5,6 +5,7 @@ KEYWORDS = {
     "CHAR": "CHAR_KW",
     "ELSE": "ELSE_KW",
     "FALSE": "FALSE_KW",
+    "FILEOPERATE": "FILEOP_KW",
     "GET": "GET_KW",
     "IF": "IF_KW",
     "INPUT": "INP_KW",
