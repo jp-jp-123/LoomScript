@@ -1,32 +1,29 @@
-# Lexical Analyser for LoomScript
-'''
-TODO: times where code doesnt have space, ex:
-        b=1+5
-        OUTPUT("x is also less than 15")
-        INPUT("get data")
-'''
-
 from tokens import *
+from charset import *
 from collections import OrderedDict
-import re
+
+'''
+TODO:   Fix Broken Comment bug
+'''
 
 
 class Lexer:
 
     def __init__(self):
-        self.lookAheadFlag = ''
-        self.startInstanceFound = False
-        self.unparsedLexeme = []
-        self.quote = 0  # tracks the number of quotation mark
-        self.stringLiteralBuffer = []  # buffer array for string literals
-        self.singleStringLiteralBufferActive = False  # single quotation string buffer checker
-        self.doubleStringLiteralBufferActive = False  # double quotation string buffer checker
-        self.buffer = []
-        self.bufferActive = False
-        self.tokenTable = []  # table for tokenized lexemes
-        self.sourceCode = None  # source code
+        self.tokenTable = []
+        self.sourceCode = None
 
-    # Gets the file to be fed to Lexer
+        self.lexemeBuffer = ''
+        self.specialCharBuffer = ''
+
+        self.stopFlag = False
+        self.stopFlagValue = ''
+        self.nonLexeme = False
+
+        self.lineNo = 1
+        self.charNo = 0
+        self.lineLength = 0
+
     def SourceToLexemes(self, filepath: str):
 
         with open(filepath) as file:
@@ -34,166 +31,293 @@ class Lexer:
 
         # Feeds file to parser by line
         for perLine in self.sourceCode:
-            lexemes = perLine.strip().split()
+            self.lineLength = len(perLine)
+            self.LexemeParser(perLine)
 
-            self.LexemeParser(lexemes)
+    def LexemeParser(self, lexemes: str):
 
-    def CompoundLexemeParser(self, lexemeStr: str):
-        # print("the lexemeBuffer: ", lexemeStr)
-        # self.bufferActive = True
-        lexeme = ""
+        for char in lexemes:
 
-        for char in lexemeStr:
-            # print(char)
-            if char.isalnum() or ('_' in char) or ('"' in char) or ('\'' in char):
-                lexeme += char
+            # Char no. tracking
+            self.charNo += 1
 
-            elif char in SPECIAL_CHARACTERS:
-                # print(char)
-                if lexeme:
-                    # print(lexemeBuffer)
-                    self.unparsedLexeme.append(lexeme)
-                    lexeme = ""
-                self.unparsedLexeme.append(char)
+            # Line no. tacking
+            if char == '\n':
+                self.lineNo += 1
+                self.charNo = 0
 
-        if lexeme:
-            # print("entering")
-            self.unparsedLexeme.append(lexeme)
+            if not self.stopFlag:
+                # Mainly checks for identifiers, includes _ since it is a valid char for naming
+                if char.isalnum() or char == '_':
 
-    # Parses the line of Lexemes into singular lexemeBuffer
-    def LexemeParser(self, lexemes: list[str]):
-        self.unparsedLexeme = []
+                    # Tokenizes the special buffer. This just means that the special char is a lexeme by itself
+                    # and the special char can be tokenized now. Ex: +1
+                    if self.specialCharBuffer:
+                        self.Tokenizer(self.specialCharBuffer)
+                        self.BufferClear('spc')
 
-        for lexeme in lexemes:
-            if self.bufferActive:
-                self.LookAhead('"', lexeme)
+                    # Checks if the buffer has contents and its first char
+                    # Alphabet first char allows every character
+                    # Digit first char only allows numbers, invalid lexeme otherwise. Also serves as Left-Hand of float
+                    if self.lexemeBuffer:
+                        if self.lexemeBuffer[0].isalpha():
+                            self.lexemeBuffer += char
+
+                        elif self.lexemeBuffer[0].isdigit():
+                            if char.isdigit():
+                                self.lexemeBuffer += char
+                            else:
+                                # We allow to add the illegal start of identifier, but we will tokenize as TOKEN_ERROR
+                                # later
+                                print(f'Illegal Character at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
+                                self.lexemeBuffer += char
+
+                        else:
+                            print("Undetermined Lexer Error")
+
+                    # This just means that buffer is empty and will accept any char
+                    else:
+                        self.lexemeBuffer += char
+
+                    if char == lexemes[-1]:
+                        self.Tokenizer(self.lexemeBuffer)
+                        self.BufferClear('lxm')
+
+                # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
+                elif char.isspace():
+                    if self.lexemeBuffer or self.specialCharBuffer:
+
+                        # if a special buffer is found isolated in whitespaces, it is a single token
+                        if self.specialCharBuffer:
+                            self.Tokenizer(self.specialCharBuffer)
+                        else:
+                            self.Tokenizer(self.lexemeBuffer)
+                    self.BufferClear()
+
+                # Takes the special chars
+                elif char in SPECIAL_CHARACTERS:
+
+                    # If a special char is hit after taking an alphanum, it means it is a separate token
+                    # ex: 1+ (1 gets tokenized, + goes to buffer)
+                    if self.lexemeBuffer and char != '.':
+                        self.Tokenizer(self.lexemeBuffer)
+                        self.BufferClear('lxm')
+
+                    # Checks the start for STRING_LITERAL
+                    if char == '"' or char == '\'':
+                        if char == '"':
+
+                            # Checks if special char buffer contains anything, tokenizes it first then clears buffer
+                            if self.specialCharBuffer:
+                                self.Tokenizer(self.specialCharBuffer)
+                                self.BufferClear('spc')
+
+                            # flips stopFlag value, necessary to collect ALL the chars inside the string into the buffer
+                            self.stopFlag = not self.stopFlag
+                            self.stopFlagValue = '"'
+                            self.specialCharBuffer += char
+
+                        else:
+
+                            # Checks if special char buffer contains anything, tokenizes it and clears buffer
+                            if self.specialCharBuffer:
+                                self.Tokenizer(self.specialCharBuffer)
+                                self.BufferClear('spc')
+
+                            # flips stopFlag value, necessary to collect ALL the chars inside the string into the buffer
+                            self.stopFlag = not self.stopFlag
+                            self.stopFlagValue = '\''
+                            self.specialCharBuffer += char
+
+                    # Checks if it hits a comment syntax, collects everything inside
+                    elif char == '/' and self.specialCharBuffer == '/':
+                        self.stopFlag = not self.stopFlag
+                        self.stopFlagValue = '//'
+                        self.nonLexeme = not self.nonLexeme
+                        self.specialCharBuffer += char
+
+                    # Checks the start for decimal
+                    elif char == '.':
+
+                        # Checks if special char buffer contains anything, tokenizes it and clears buffer
+                        if self.specialCharBuffer:
+                            self.Tokenizer(self.specialCharBuffer)
+                            self.BufferClear('spc')
+
+                        self.stopFlag = not self.stopFlag
+                        self.stopFlagValue = NOT_IN_DECIMAL
+                        self.specialCharBuffer += char
+
+                        # if decimal found to be at EOL (ex: d = 2.) join both buffers and tokenize
+                        if self.charNo == self.lineLength:
+                            self.lexemeBuffer += self.specialCharBuffer
+                            self.Tokenizer(self.lexemeBuffer)
+                            self.BufferClear()
+
+                    # Puts the special char in the buffer waiting for the following chars
+                    else:
+
+                        # if the special char has doubles, add to buffer
+                        if self.specialCharBuffer or char in DOUBLES:
+                            self.specialCharBuffer += char
+
+                        # if the special char is not a double, tokenizes char
+                        else:
+                            self.Tokenizer(char)
+                            self.BufferClear('spc')
+
+                # Usually takes the illegal characters
+                else:
+                    print(f'Illegal Char at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
+
+                    # Block for Illegal Characters in Identifiers
+
+                    # Tokenizes current buffer contents (if it contains anything) and clears it
+                    if self.lexemeBuffer:
+                        self.Tokenizer(self.lexemeBuffer)
+                        self.BufferClear("lxm")
+
+                    # Tokenizes the illegal character as error
+                    self.tokenTable.append((char, "ERROR_TOKEN"))
+
+            # if stopFlag value is true, adds to the special char buffer
             else:
-                self.Tokenizer(lexeme)
+                self.specialCharBuffer += char
 
-            if self.unparsedLexeme:
-                self.LexemeParser(self.unparsedLexeme)
-                self.unparsedLexeme = []
+                # Checks if it encounters a stop value (for lexemes that require single char to end) or
+                # if the last 2 chars is a stop value (for comments e.g., //) or
+                # if it reaches the end of line without matching a stop flag (will result in error)
 
-    # Tokenizing the lexemes happens here
-    def Tokenizer(self, lexeme: str):
+                # String Checker
+                if char == self.stopFlagValue:
 
-        print(lexeme)
-        # Check if lexemeBuffer is a SPECIAL CHARACTER or an OPERATOR
-        if lexeme in (SPECIAL_CHARACTERS or OPERATORS):
+                    if self.specialCharBuffer[-2] == "\\":
+                        continue
+
+                    # Since stop value has been satisfied, stop flag is lifted
+                    if char == self.stopFlagValue or char in self.stopFlagValue:
+                        self.stopFlag = not self.stopFlag
+
+                    # Check if the collected is a lexeme
+                    if not self.nonLexeme:
+                        if (('"' or '\'') == self.specialCharBuffer[0]) and (
+                                ('"' or '\'') == self.specialCharBuffer[-1]):
+
+                            # No need to call the tokenizer, understood to be a string_literal
+                            self.tokenTable.append((self.specialCharBuffer, "STRING_LITERAL"))
+
+                            self.BufferClear('spc')
+
+                        else:
+                            pass
+                            # print(self.specialCharBuffer)
+
+                # Comment Checker
+                elif self.specialCharBuffer[-2:] == self.stopFlagValue:
+
+                    self.stopFlag = not self.stopFlag
+
+                    # If it is a non-lexeme (ex. Comments), flips non lexeme bool but won't be tokenized
+                    if self.specialCharBuffer[-2:] == self.stopFlagValue:
+                        self.nonLexeme = not self.nonLexeme
+
+                    self.BufferClear('spc')
+
+                # Decimal/Float Literal Checker
+                elif ((char in self.stopFlagValue) and '.' == self.specialCharBuffer[
+                    0]):
+                    # Since stop value has been satisfied, stop flag is lifted
+                    self.stopFlag = not self.stopFlag
+
+                    print("decimal")
+
+                    # If it is a decimal, specialCharBuffer should start with decimal
+                    # Since the stop value is already appended, we remove from the original string
+                    # and re-assign it
+                    lastChar = ''
+
+                    if not self.specialCharBuffer[-1].isdigit():
+                        lastChar = self.specialCharBuffer[-1]
+                        self.specialCharBuffer = self.specialCharBuffer[:-1]
+
+                    # If lexemesBuffer contains a left-hand side, join them and tokenize
+                    if self.lexemeBuffer and self.lexemeBuffer.isdigit():
+                        self.lexemeBuffer += self.specialCharBuffer
+                        self.Tokenizer(self.lexemeBuffer)
+                        self.BufferClear()
+
+                    else:
+                        self.Tokenizer(self.specialCharBuffer)
+                        self.BufferClear()
+
+                    # if the lastChar is not a space, add to buffer, ignore otherwise
+                    if not lastChar.isspace():
+                        self.specialCharBuffer += lastChar
+
+                # if it reaches EOL without stop flag, tokenize and emit error token, usually for unclosed string
+                elif self.charNo == self.lineLength:
+                    self.Tokenizer(self.specialCharBuffer)
+                    self.BufferClear('spc')
+
+                else:
+                    pass
+                    # print(self.specialCharBuffer)
+
+    def Tokenizer(self, lexeme):
+
+        # Check if buffer is a SPECIAL CHARACTER or an OPERATOR
+        if (lexeme in DOUBLE_OPERATORS) or (lexeme in OPERATORS) or (lexeme in SPECIAL_CHARACTERS):
             self.SpecialCharTokenizer(lexeme)
 
-        # Check if lexemeBuffer is a KEYWORD
+        # Check if buffer is a KEYWORD
         elif lexeme in KEYWORDS:
-            self.tokenTable.append((lexeme, "KEYWORD"))
+            self.tokenTable.append((lexeme, KEYWORDS[lexeme]))
 
-        # Check if lexemeBuffer is an INT LITERAL
-        elif lexeme.isdigit():
-            self.tokenTable.append((lexeme, "INT_LITERAL"))
+        # Check if buffer is an INT LITERAL
+        elif lexeme.replace('.', '').isdigit():
+            self.tokenTable.append((lexeme, "NUM_LITERAL"))
 
-        # Check if lexemeBuffer is an IDENTIFIER
-        elif lexeme.replace('_', '').isalnum():
+        # Check if buffer is an IDENTIFIER
+        elif lexeme.replace('_', '').isalnum() and lexeme[0].isalpha():
             self.tokenTable.append((lexeme, "IDENTIFIER"))
 
-        # Check if lexemeBuffer is a STRING_LITERAL
-        elif ('"' in lexeme[0] and '"' in lexeme[-1]) or ('\'' in lexeme[0] and '\'' in lexeme[-1]):
-            self.StringLiteralDirector(lexeme)
-
-        # Check if lexemeBuffer can't be tokenized/need more parsing
         else:
-            if ('"' in lexeme):
-                self.LookAhead('"', lexeme)
-            else:
-                self.CompoundLexemeParser(lexeme)
+            self.tokenTable.append((lexeme, "ERROR_TOKEN"))
 
-    # If the lexemeBuffer is a special character checks if it is an operator or not
     def SpecialCharTokenizer(self, charLexeme: str):
 
-        if charLexeme in OPERATORS:
-            self.tokenTable.append((charLexeme, "OPERATOR"))
+        if charLexeme in DOUBLE_OPERATORS:
+            self.tokenTable.append((charLexeme, DOUBLE_OPERATORS[charLexeme]))
+
+        elif charLexeme in OPERATORS:
+            self.tokenTable.append((charLexeme, OPERATORS[charLexeme]))
+
         else:
-            self.tokenTable.append((charLexeme, "SPECIAL_CHAR"))
+            self.tokenTable.append((charLexeme, SPECIAL_CHARACTERS[charLexeme]))
 
-    def StringLiteralDirector(self, lexeme):
-        if '"' in lexeme or '\'' in lexeme:
-            if '"' in lexeme:
-                self.doubleStringLiteralBufferActive = True
-                self.DoubleStringLiteralTokenizer(lexeme)
-            else:
-                self.singleStringLiteralBufferActive = True
-                self.SingleStringLiteralTokenizer(lexeme)
+    def BufferClear(self, clear='all'):
 
-    # Tokenizing the string literal happens here
-    def DoubleStringLiteralTokenizer(self, lexeme: list[str]):
+        if clear == 'lxm':
+            self.lexemeBuffer = ''
+        elif clear == 'spc':
+            self.specialCharBuffer = ''
+        else:
+            self.lexemeBuffer = ''
+            self.specialCharBuffer = ''
 
-        string = ' '.join(lexeme)
-
-        quotation = string[0]
-        self.SpecialCharTokenizer(quotation)
-
-        full_string = string.strip('"')
-        self.tokenTable.append((full_string, "STRING_LITERAL"))
-
-        self.ClearStringLiteralBuffer()
-
-    def SingleStringLiteralTokenizer(self, lexeme: str):
-
-        # Adds the lexemes to the string buffer while keeping track of quotations passed
-        self.stringLiteralBuffer.append(lexeme)
-        if '\'' in lexeme:
-            self.quote += lexeme.count('\'')
-
-        # Turns off the buffer if quotations reached two
-        if self.quote == 2:
-            string = ' '.join(self.stringLiteralBuffer)
-
-            quotation = string[0]
-            self.SpecialCharTokenizer(quotation)
-
-            full_string = string.strip('\'')
-            self.tokenTable.append((full_string, "STRING_LITERAL"))
-
-            self.ClearStringLiteralBuffer()
-
-    def ClearStringLiteralBuffer(self):
-
-        self.singleStringLiteralBufferActive = False
-        self.doubleStringLiteralBufferActive = False
-        self.stringLiteralBuffer = []
-        self.buffer = []
-        self.quote = 0
-
-    def LookAhead(self, flag: str, stack: str):
-
-        self.bufferActive = True
-
-        if flag in stack:
-            if not self.startInstanceFound:
-                self.buffer.append(stack)
-                self.bufferActive = True
-                self.startInstanceFound = True
-            else:
-                self.buffer.append(stack)
-                self.bufferActive = False
-
-        if flag not in stack:
-            self.buffer.append(stack)
-
-        if not self.bufferActive:
-            self.DoubleStringLiteralTokenizer(self.buffer)
-
-        # return self.buffer
-
-    # Displays the lexer output
     def LexerOutput(self):
 
         # removes the duplicates
-        tokenTable = list(OrderedDict.fromkeys(self.tokenTable))
+        '''tokenTable = list(OrderedDict.fromkeys(self.tokenTable))
 
-        for lexeme in tokenTable:
+        for buffer in tokenTable:
+            print(buffer)'''
+
+        for lexeme in self.tokenTable:
             print(lexeme)
 
 
 if __name__ == '__main__':
     lxc = Lexer()
-    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\LexicalAnalyser\\test.txt")
+    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.txt")
     lxc.LexerOutput()

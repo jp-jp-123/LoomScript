@@ -1,0 +1,13 @@
+test_ident = 1.23+1
+
+//hello world//
+
+txt = "this is an escape \" char"
+
+add = 1++1/2.3--5
+
+dec = 3.
+
+bool = 2 != 3
+
+if(statement)

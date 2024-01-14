@@ -1,3 +1,9 @@
+//test for illegal int identifiers//
+
+S25 = 2
+1l$p = "k"
+
+// test for unclosed decimal at EOL //
 
 t = 2.
-d = 2.5
+

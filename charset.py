@@ -5,6 +5,7 @@ LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
 DIGITS = "0123456789"
 
 NOT_IN_DECIMAL = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~" + ' ' + '\n'
+IDENTIFIER = UPPERCASE + LOWERCASE + DIGITS + '_'
 
 SPECIAL_CHARSET = {
     '.': "period",
@@ -34,6 +35,7 @@ SPECIAL_CHARSET = {
 }
 
 DOUBLES = {
+    '!': "exclamation",
     '+': "arithmetic_add",
     '-': "arithmetic_subtract",
     '*': "arithmetic_multiply",
