@@ -319,5 +319,5 @@ class Lexer:
 
 if __name__ == '__main__':
     lxc = Lexer()
-    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.txt")
+    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.loom")
     lxc.LexerOutput()
