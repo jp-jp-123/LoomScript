@@ -22,3 +22,13 @@ SET(path){
         }
     }
 }
+
+num = 2
+
+IF (num 2% == 0) {
+	OUTPUT(num + "is even")
+
+	}
+	ELSE {
+		OUTPUT(num + " is odd")
+	}

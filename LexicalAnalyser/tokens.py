@@ -1,8 +1,10 @@
-# token table for lexerLegacy.py
+# token table for lexer.py
 
 KEYWORDS = {
     "BOOL": "BOOL_KW",
+    "BOOLEAN": "BOOL_KW",
     "CHAR": "CHAR_KW",
+    "CHARACTER": "CHAR_KW",
     "ELSE": "ELSE_KW",
     "FALSE": "FALSE_KW",
     "FILEOPERATE": "FILEOP_KW",
@@ -11,6 +13,7 @@ KEYWORDS = {
     "INPUT": "INP_KW",
     "LOOP": "LOOP_KW",
     "NUM": "NUM_KW",
+    "NUMBER": "NUM_KW",
     "OUTPUT": "OUT_KW",
     "SET": "SET_KW",
     "THEN": "THEN_KW",

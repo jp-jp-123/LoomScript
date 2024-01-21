@@ -1,57 +1,85 @@
-Lexeme                                  Token
-==================================================
-pa                                      IDENTIFIER
-$                                       ERROR_TOKEN
-th                                      IDENTIFIER
-=                                       ASSIGN_OP
-"C:\Users\User\Pictures\Folder1"        STRING_LITERAL
-SET                                     SET_KW
-(                                       OPEN_PARENTHESIS
-path                                    IDENTIFIER
-)                                       CLOSE_PARENTHESIS
-{                                       OPEN_CURLY_BRACKET
-all_jpg                                 IDENTIFIER
-=                                       ASSIGN_OP
-GET                                     GET_KW
-(                                       OPEN_PARENTHESIS
-"filetype"                              STRING_LITERAL
-,                                       COMMA
-"jpg"                                   STRING_LITERAL
-)                                       CLOSE_PARENTHESIS
-LOOP                                    LOOP_KW
-(                                       OPEN_PARENTHESIS
-NULL                                    IDENTIFIER
-,                                       COMMA
-jpg_var                                 IDENTIFIER
-OF                                      IDENTIFIER
-all_jpg                                 IDENTIFIER
-)                                       CLOSE_PARENTHESIS
-{                                       OPEN_CURLY_BRACKET
-OUTPUT                                  OUT_KW
-(                                       OPEN_PARENTHESIS
-jpg_var                                 IDENTIFIER
-)                                       CLOSE_PARENTHESIS
-SET                                     SET_KW
-(                                       OPEN_PARENTHESIS
-jpg_var                                 IDENTIFIER
-)                                       CLOSE_PARENTHESIS
-{                                       OPEN_CURLY_BRACKET
-meta_data                               IDENTIFIER
-=                                       ASSIGN_OP
-GET                                     GET_KW
-(                                       OPEN_PARENTHESIS
-"metadata"                              STRING_LITERAL
-,                                       COMMA
-"Date Taken"                            STRING_LITERAL
-,                                       COMMA
-"Date Created"                          STRING_LITERAL
-)                                       CLOSE_PARENTHESIS
-FILEOPERATE                             FILEOP_KW
-(                                       OPEN_PARENTHESIS
-"rename"                                STRING_LITERAL
-,                                       COMMA
-meta_data                               IDENTIFIER
-)                                       CLOSE_PARENTHESIS
-}                                       CLOSE_CURLY_BRACKET
-}                                       CLOSE_CURLY_BRACKET
-}                                       CLOSE_CURLY_BRACKET
+Line No.            Lexeme                                  Token
+======================================================================
+1                   pa                                      IDENTIFIER
+1                   $                                       ERROR_TOKEN
+1                   th                                      IDENTIFIER
+1                   =                                       ASSIGN_OP
+1                   "C:\Users\User\Pictures\Folder1"        STRING_LITERAL
+4                   SET                                     SET_KW
+4                   (                                       OPEN_PARENTHESIS
+4                   path                                    IDENTIFIER
+4                   )                                       CLOSE_PARENTHESIS
+4                   {                                       OPEN_CURLY_BRACKET
+7                   all_jpg                                 IDENTIFIER
+7                   =                                       ASSIGN_OP
+7                   GET                                     GET_KW
+7                   (                                       OPEN_PARENTHESIS
+7                   "filetype"                              STRING_LITERAL
+7                   ,                                       COMMA
+7                   "jpg"                                   STRING_LITERAL
+7                   )                                       CLOSE_PARENTHESIS
+10                  LOOP                                    LOOP_KW
+10                  (                                       OPEN_PARENTHESIS
+10                  NULL                                    IDENTIFIER
+10                  ,                                       COMMA
+10                  jpg_var                                 IDENTIFIER
+10                  OF                                      IDENTIFIER
+10                  all_jpg                                 IDENTIFIER
+10                  )                                       CLOSE_PARENTHESIS
+10                  {                                       OPEN_CURLY_BRACKET
+12                  OUTPUT                                  OUT_KW
+12                  (                                       OPEN_PARENTHESIS
+12                  jpg_var                                 IDENTIFIER
+12                  )                                       CLOSE_PARENTHESIS
+15                  SET                                     SET_KW
+15                  (                                       OPEN_PARENTHESIS
+15                  jpg_var                                 IDENTIFIER
+15                  )                                       CLOSE_PARENTHESIS
+15                  {                                       OPEN_CURLY_BRACKET
+18                  meta_data                               IDENTIFIER
+18                  =                                       ASSIGN_OP
+18                  GET                                     GET_KW
+18                  (                                       OPEN_PARENTHESIS
+18                  "metadata"                              STRING_LITERAL
+18                  ,                                       COMMA
+18                  "Date Taken"                            STRING_LITERAL
+18                  ,                                       COMMA
+18                  "Date Created"                          STRING_LITERAL
+18                  )                                       CLOSE_PARENTHESIS
+21                  FILEOPERATE                             FILEOP_KW
+21                  (                                       OPEN_PARENTHESIS
+21                  "rename"                                STRING_LITERAL
+21                  ,                                       COMMA
+21                  meta_data                               IDENTIFIER
+21                  )                                       CLOSE_PARENTHESIS
+22                  }                                       CLOSE_CURLY_BRACKET
+23                  }                                       CLOSE_CURLY_BRACKET
+24                  }                                       CLOSE_CURLY_BRACKET
+26                  num                                     IDENTIFIER
+26                  =                                       ASSIGN_OP
+27                  2                                       NUM_LITERAL
+28                  IF                                      IF_KW
+28                  (                                       OPEN_PARENTHESIS
+28                  num                                     IDENTIFIER
+28                  2                                       NUM_LITERAL
+28                  %                                       ARITHMETIC_MODULO
+28                  ==                                      EQUAL_TO
+28                  0                                       NUM_LITERAL
+28                  )                                       CLOSE_PARENTHESIS
+28                  {                                       OPEN_CURLY_BRACKET
+29                  OUTPUT                                  OUT_KW
+29                  (                                       OPEN_PARENTHESIS
+29                  num                                     IDENTIFIER
+29                  +                                       ARITHMETIC_ADD
+29                  "is even"                               STRING_LITERAL
+29                  )                                       CLOSE_PARENTHESIS
+31                  }                                       CLOSE_CURLY_BRACKET
+32                  ELSE                                    ELSE_KW
+32                  {                                       OPEN_CURLY_BRACKET
+33                  OUTPUT                                  OUT_KW
+33                  (                                       OPEN_PARENTHESIS
+33                  num                                     IDENTIFIER
+33                  +                                       ARITHMETIC_ADD
+33                  " is odd"                               STRING_LITERAL
+33                  )                                       CLOSE_PARENTHESIS
+34                  }                                       CLOSE_CURLY_BRACKET

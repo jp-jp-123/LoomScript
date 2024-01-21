@@ -52,12 +52,12 @@ class Lexer:
                 if char.isalnum() or char == '_':
                     # Tokenizes buffer if buffer contained non-identifier characters (use case ex: +1)
                     if not self.ValidIdent(self.buffer):
-                        self.Tokenizer(self.buffer)
+                        self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
 
                     # Checks if the buffer has contents and its first char
                     # Alphabet first char allows every character
-                    # Digit first char only allows numbers, invalid lexeme otherwise. Also serves as Left-Hand of float
+                    # Digit first char only allows numbers, invalid lexeme otherwise.
                     if self.buffer:
                         if self.buffer[0].isalpha():
                             self.buffer += char
@@ -79,21 +79,21 @@ class Lexer:
                     # Checks if the character is at EOL, necessary to get tokenized if didn't get followed by another
                     # character
                     if char == lexemes[-1]:
-                        self.Tokenizer(self.buffer)
+                        self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
 
                 # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
                 elif char.isspace():
                     # Checks if buffer has contents
                     if self.buffer:
-                        self.Tokenizer(self.buffer)
+                        self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
 
                 elif char in SPECIAL_CHARACTERS:
                     # If a special char is hit after taking an alphanum, it means it is a separate token
                     # ex: 1+ (1 gets tokenized, + goes down the further the if-else)
                     if self.buffer.replace('_', '').isalnum() and char != '.':
-                        self.Tokenizer(self.buffer)
+                        self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
 
                     # Checks for start of STRING_LITERAL
@@ -125,7 +125,7 @@ class Lexer:
 
                         # if decimal found to be at EOL and ending in dot symbol (ex: d = 2.), tokenize
                         if self.charNo == self.lineLength:
-                            self.Tokenizer(self.buffer)
+                            self.Tokenizer(self.lineNo, self.buffer)
                             self.BufferClear()
 
                     else:
@@ -135,22 +135,22 @@ class Lexer:
 
                         # if not a DOUBLES, char is tokenized directly
                         else:
-                            self.Tokenizer(char)
+                            self.Tokenizer(self.lineNo, char)
                             self.BufferClear()
 
                 # takes the illegal characters
                 else:
-                    print(f'Illegal Char at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
+                    print(f'Illegal Character at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
 
                     # Block for Illegal Characters in Identifiers
 
                     # Tokenizes current buffer contents (if it contains anything) and clears it
                     if self.buffer:
-                        self.Tokenizer(self.buffer)
+                        self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
 
                     # Tokenizes the illegal character as error
-                    self.tokenTable.append((char, "ERROR_TOKEN"))
+                    self.tokenTable.append((self.lineNo, char, "ERROR_TOKEN"))
 
             # if stopFlag value is true, every character will be accepted
             else:
@@ -166,7 +166,7 @@ class Lexer:
                     # If stop value has been satisfied, stop flag is lifted and the buffer is tokenized
                     if char == self.stopFlagValue or char in self.stopFlagValue:
                         self.stopFlag = not self.stopFlag
-                        self.tokenTable.append((self.buffer, "STRING_LITERAL"))
+                        self.tokenTable.append((self.lineNo, self.buffer, "STRING_LITERAL"))
                         self.BufferClear()
 
                 # Comment Checker
@@ -177,9 +177,10 @@ class Lexer:
                     self.stopFlag = not self.stopFlag
 
                     # If it is a non-lexeme (ex. Comments), flips non lexeme bool but won't be tokenized
-                    # This is copied from previous lexer, not sure if necessary or not
                     if self.buffer[-2:] == self.stopFlagValue:
                         self.nonLexeme = not self.nonLexeme
+
+                    # self.tokenTable.append((self.buffer, "COMMENT"))
 
                     self.BufferClear()
 
@@ -190,53 +191,53 @@ class Lexer:
                     self.stopFlag = not self.stopFlag
 
                     # Tokenizes the buffer since we know it contains decimals
-                    self.Tokenizer(self.buffer)
+                    self.Tokenizer(self.lineNo, self.buffer)
                     self.BufferClear()
 
                     # Since we have a char in queue, check if it is not a space, do add, ignore otherwise
                     if not char.isspace():
                         self.buffer += char
 
-                # if it reaches EOL without stop flag, tokenize and emit error token, usually for unclosed string
+                # if it reaches EOL/EOF without stop flag, tokenize and emit error token, usually for unclosed string
                 elif self.charNo == self.lineLength:
-                    self.Tokenizer(self.buffer)
+                    self.Tokenizer(self.lineNo, self.buffer)
                     self.BufferClear()
 
                 # if it is not any of the stop flag, adds to buffer
                 else:
                     self.buffer += char
 
-    def Tokenizer(self, lexeme):
+    def Tokenizer(self, lineNo, lexeme):
 
         # Check if buffer is a SPECIAL CHARACTER or an OPERATOR
         if (lexeme in DOUBLE_OPERATORS) or (lexeme in OPERATORS) or (lexeme in SPECIAL_CHARACTERS):
-            self.SpecialCharTokenizer(lexeme)
+            self.SpecialCharTokenizer(lineNo, lexeme)
 
         # Check if buffer is a KEYWORD
         elif lexeme in KEYWORDS:
-            self.tokenTable.append((lexeme, KEYWORDS[lexeme]))
+            self.tokenTable.append((lineNo, lexeme, KEYWORDS[lexeme]))
 
         # Check if buffer is an INT LITERAL
         elif lexeme.replace('.', '').isdigit():
-            self.tokenTable.append((lexeme, "NUM_LITERAL"))
+            self.tokenTable.append((lineNo, lexeme, "NUM_LITERAL"))
 
         # Check if buffer is an IDENTIFIER
         elif lexeme.replace('_', '').isalnum() and lexeme[0].isalpha():
-            self.tokenTable.append((lexeme, "IDENTIFIER"))
+            self.tokenTable.append((lineNo, lexeme, "IDENTIFIER"))
 
         else:
-            self.tokenTable.append((lexeme, "ERROR_TOKEN"))
+            self.tokenTable.append((lineNo, lexeme, "ERROR_TOKEN"))
 
-    def SpecialCharTokenizer(self, charLexeme: str):
+    def SpecialCharTokenizer(self, lineNo, charLexeme: str):
 
         if charLexeme in DOUBLE_OPERATORS:
-            self.tokenTable.append((charLexeme, DOUBLE_OPERATORS[charLexeme]))
+            self.tokenTable.append((lineNo, charLexeme, DOUBLE_OPERATORS[charLexeme]))
 
         elif charLexeme in OPERATORS:
-            self.tokenTable.append((charLexeme, OPERATORS[charLexeme]))
+            self.tokenTable.append((lineNo, charLexeme, OPERATORS[charLexeme]))
 
         else:
-            self.tokenTable.append((charLexeme, SPECIAL_CHARACTERS[charLexeme]))
+            self.tokenTable.append((lineNo, charLexeme, SPECIAL_CHARACTERS[charLexeme]))
 
     def BufferClear(self):
 
@@ -259,5 +260,5 @@ class Lexer:
 
 if __name__ == '__main__':
     lxc = Lexer()
-    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.loom")
+    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test.loom")
     lxc.LexerOutput()

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="renaming and deleted old lexer file">
-      <change afterPath="$PROJECT_DIR$/LexicalAnalyser/__init__..py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="added symbol table txt file. Added file extension checking">
+      <change afterPath="$PROJECT_DIR$/SyntacticalAnalyser/Synter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexerLegacy.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexerLegacy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test.loom" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test1.loom" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test2.loom" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test3.loom" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/tokens.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/tokens.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SymbolTable.txt" beforeDir="false" afterPath="$PROJECT_DIR$/SymbolTable.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestCase/test.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test.loom" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,8 +55,8 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript" />
       <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript\TestCase" />
+      <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript" />
       <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript\LexicalAnalyser" />
     </key>
   </component>
@@ -225,7 +223,21 @@
       <option name="project" value="LOCAL" />
       <updated>1705226610619</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="added symbol table txt file. Added file extension checking">
+      <created>1705231833970</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1705231833970</updated>
+    </task>
+    <task id="LOCAL-00024" summary="added symbol table txt file. Added file extension checking">
+      <created>1705231854440</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1705231854440</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -264,7 +276,8 @@
     <MESSAGE value="fixed decimal bug (unfinished right hand decimal)&#10;added error handling for unclosed string" />
     <MESSAGE value="separate directory for test cases" />
     <MESSAGE value="renaming and deleted old lexer file" />
-    <option name="LAST_COMMIT_MESSAGE" value="renaming and deleted old lexer file" />
+    <MESSAGE value="added symbol table txt file. Added file extension checking" />
+    <option name="LAST_COMMIT_MESSAGE" value="added symbol table txt file. Added file extension checking" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
