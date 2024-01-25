@@ -3,7 +3,7 @@ from charset import *
 from collections import OrderedDict
 
 '''
-This scratch utilized only one buffer and clearer stopFlag logics in an effort to make a clearer and efficient lexer.
+utilizes only one buffer and clearer stopFlag logics in an effort to make a clearer and efficient lexer.
 The difference from previous lexer is that in stopFlag, instead of adding to buffer then comparing, it compares first 
 before adding to buffer.
 '''
@@ -35,6 +35,8 @@ class Lexer:
             self.lineLength = len(perLine)
             self.LexemeParser(perLine)
 
+        self.tokenTable.append((self.lineNo, 'EOF', "EOF_TOKEN"))
+
     def LexemeParser(self, lexemes: str):
 
         for char in lexemes:
@@ -50,7 +52,7 @@ class Lexer:
             if not self.stopFlag:
                 # Mainly checks for identifiers, includes _ since it is a valid char for naming
                 if char.isalnum() or char == '_':
-                    # Tokenizes buffer if buffer contained non-identifier characters (use case ex: +1)
+                    # Tokenizes buffer if buffer contained non-identifier characters (use case ex: +1 +a)
                     if not self.ValidIdent(self.buffer):
                         self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
@@ -65,7 +67,7 @@ class Lexer:
                             if char.isdigit():
                                 self.buffer += char
                             else:
-                                # We allow to add the illegal start of identifier, but will be tokenized as TOKEN_ERROR
+                                # We allow to add the illegal start of identifier, but will be tokenized as ERROR_TOKEN
                                 print(f'Illegal Character at Char no. {self.charNo}, Line no. {self.lineNo}: {lexemes}')
                                 self.buffer += char
                         # for debugging, if unexpected error arises
@@ -91,7 +93,7 @@ class Lexer:
 
                 elif char in SPECIAL_CHARACTERS:
                     # If a special char is hit after taking an alphanum, it means it is a separate token
-                    # ex: 1+ (1 gets tokenized, + goes down the further the if-else)
+                    # ex: 1+ a+ (1 gets tokenized, + goes down the further the if-else)
                     if self.buffer.replace('_', '').isalnum() and char != '.':
                         self.Tokenizer(self.lineNo, self.buffer)
                         self.BufferClear()
@@ -110,7 +112,7 @@ class Lexer:
                             self.stopFlagValue = '\''
                             self.buffer += char
 
-                    # Checks for start of comment
+                    # Checks for start of comment buffer = / char = / //
                     elif char == '/' and self.buffer == '/':
                         self.stopFlag = not self.stopFlag
                         self.stopFlagValue = '//'
@@ -135,6 +137,9 @@ class Lexer:
 
                         # if not a DOUBLES, char is tokenized directly
                         else:
+                            # Tokenize whatever inside the buffer
+                            if self.buffer:
+                                self.Tokenizer(self.lineNo, self.buffer)
                             self.Tokenizer(self.lineNo, char)
                             self.BufferClear()
 
@@ -179,8 +184,7 @@ class Lexer:
                     # If it is a non-lexeme (ex. Comments), flips non lexeme bool but won't be tokenized
                     if self.buffer[-2:] == self.stopFlagValue:
                         self.nonLexeme = not self.nonLexeme
-
-                    # self.tokenTable.append((self.buffer, "COMMENT"))
+                        # self.tokenTable.append((self.lineNo, self.buffer, "COMMENT"))
 
                     self.BufferClear()
 
@@ -200,6 +204,7 @@ class Lexer:
 
                 # if it reaches EOL/EOF without stop flag, tokenize and emit error token, usually for unclosed string
                 elif self.charNo == self.lineLength:
+                    self.buffer += char
                     self.Tokenizer(self.lineNo, self.buffer)
                     self.BufferClear()
 
@@ -260,5 +265,5 @@ class Lexer:
 
 if __name__ == '__main__':
     lxc = Lexer()
-    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test.loom")
+    lxc.SourceToLexemes("C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.loom")
     lxc.LexerOutput()
