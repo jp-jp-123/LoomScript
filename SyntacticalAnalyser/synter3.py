@@ -78,8 +78,8 @@ class Synter:
         if self.symTIndex < len(self.symTable):
             self.GetToken()
 
-    def MakeNode(self, nodeType, left, right=None):
-        return Synter.Node(nodeType, left, right)
+    def MakeNode(self, nodeType, left, right=None, n=None):
+        return Synter.Node(nodeType, left, right, value=n)
 
     def MakeLeaf(self, nodeType, n):
         # Makes a leaf node but not connected to anything yet
@@ -165,10 +165,6 @@ class Synter:
 
             # Call Expression() again with precedence same to UNARY_SUBTRACT. Any prefix unaries are fine
             node = self.Expression(expt.unary_pref['UNARY_SUBTRACT'][2])
-            # if op == 'ARITHMETIC_ADD':
-            # node_rep = node
-            # else:
-            # Makes node where any literals or idents are on the right (as expected)
             node_rep = self.MakeNode(op, None, node)
 
         else:
@@ -181,6 +177,7 @@ class Synter:
             while expt.all_op[self.currTok][1] and expt.all_op[self.currTok][2] >= p:
                 # Save the current token to op
                 op = self.currTok
+                op_value = self.currTokVar
 
                 # Advance and check if the next token is as expected, error otherwise
                 self.Advance()
@@ -198,7 +195,7 @@ class Synter:
                 node = self.Expression(op_prec)
 
                 # build the created nodes
-                node_rep = self.MakeNode(op, node_rep, node)
+                node_rep = self.MakeNode(op, node_rep, node, op_value)
 
         except KeyError:
             pass
