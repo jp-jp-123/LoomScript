@@ -223,7 +223,7 @@ class Synter:
             elif self.currTok == 'EOF_TOKEN':
                 self.Expects(self.currTok, 'EOF_TOKEN')
             else:
-                print(f"Error in this token inside ident {self.currTok}")
+                print(f"Error in this token {self.currTok}")
                 exit(1)
 
         elif self.currTok == 'OUT_KW':
