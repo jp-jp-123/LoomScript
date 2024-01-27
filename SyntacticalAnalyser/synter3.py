@@ -218,13 +218,12 @@ class Synter:
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
-
             if self.currTok == 'NEWLINE':
                 self.Expects(self.currTok, 'NEWLINE')
             elif self.currTok == 'EOF_TOKEN':
                 self.Expects(self.currTok, 'EOF_TOKEN')
             else:
-                print(f"Error in this token {self.currTok}")
+                print(f"Error in this token inside ident {self.currTok}")
                 exit(1)
 
         elif self.currTok == 'OUT_KW':
