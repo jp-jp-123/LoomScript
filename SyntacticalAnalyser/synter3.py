@@ -37,6 +37,7 @@ class Synter:
         self.op = tokens.OPERATORS
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
+        self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW']
 
     class Node:
         def __init__(self, nodeType, left=None, right=None, value=None):
@@ -96,12 +97,31 @@ class Synter:
         print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
 
-    def ParenExpr(self):
+    def ParenExpr(self, expected_expr=None):
         # Build the expression inside the parenthesis here
         self.Expects(self.currTok, self.sc['('])
-        node = self.Expression(1)
+        if expected_expr:
+            node = self.Expects(self.currTok, 'STRING_LITERAL')
+        else:
+            node = self.Expression(1)
+
         self.Expects(self.currTok, self.sc[')'])
         return node
+
+    def LookaheadAtom(self):
+        node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
+        self.Advance()
+
+        # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
+        if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC' and self.currTok != 'INP_KW':
+            if self.currTok == 'NEWLINE':
+                # returns the node representation if self.currTok avoided illegal lookahead tokens
+                return node_rep
+            else:
+                self.Error(self.currTok, "OPERATORS")
+
+        # returns the node representation if self.currTok avoided illegal lookahead tokens
+        return node_rep
 
     def Expression(self, precedence):
         # Building the Expression
@@ -111,37 +131,18 @@ class Synter:
 
         # This if-else block checks for "Atoms"
         if self.currTok == 'IDENTIFIER':                                # Identifier
-            node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
-            self.Advance()
-
-            # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
-            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC':
-                if self.currTok == 'NEWLINE':
-                    return node_rep
-                else:
-                    self.Error(self.currTok, "OPERATORS")
+            node_rep = self.LookaheadAtom()
 
         elif self.currTok == 'NUM_LITERAL':                             # NUM_LITERALS
-            node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
-            self.Advance()
-
-            # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
-            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC':
-                if self.currTok == 'NEWLINE':
-                    return node_rep
-                else:
-                    self.Error(self.currTok, "OPERATORS")
+            node_rep = self.LookaheadAtom()
 
         elif self.currTok == 'STRING_LITERAL':                          # STRING_LITERALS
+            node_rep = self.LookaheadAtom()
+
+        elif self.currTok == 'INP_KW':
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
-
-            # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
-            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC':
-                if self.currTok == 'NEWLINE':
-                    return node_rep
-                else:
-                    self.Error(self.currTok, "OPERATORS")
+            self.ParenExpr(expected_expr='STRING_LITERAL')
 
         elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
             node_rep = self.ParenExpr()
@@ -159,7 +160,7 @@ class Synter:
 
             self.Advance()
             # Lookahead, Unaries expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC']:
+            if self.currTok not in self.validAtoms:
                 self.Error(op, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
 
             # Call Expression() again with precedence same to UNARY_SUBTRACT. Any prefix unaries are fine
@@ -183,8 +184,8 @@ class Synter:
 
                 # Advance and check if the next token is as expected, error otherwise
                 self.Advance()
-                if self.currTok not in ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC']:
-                    self.Error(self.beforeTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC'")
+                if self.currTok not in self.validAtoms:
+                    self.Error(self.beforeTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW'")
 
                 # Get the precedence of op/saved token
                 op_prec = expt.all_op[op][2]
@@ -217,17 +218,34 @@ class Synter:
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
+
+            if self.currTok == 'NEWLINE':
+                self.Expects(self.currTok, 'NEWLINE')
+            elif self.currTok == 'EOF_TOKEN':
+                self.Expects(self.currTok, 'EOF_TOKEN')
+            else:
+                print(f"Error in this token {self.currTok}")
+                exit(1)
+
+        elif self.currTok == 'OUT_KW':
+            print("i can see here")
+
         else:
             # TODO: Postfix unaries exits here, add support for postfix unary
             # TODO: unexpected syntax error might exit here, test for every expression errors as you like and report
             if self.currTok == 'RPAREN_SC':
-                # RPAREN_SC at the end exits here, this catches it for new
+                # RPAREN_SC at the end exits here, this catches it for n0w
                 self.Expects(self.currTok, self.sc['('])
             else:
-                self.Expects(self.currTok, 'NEWLINE')
-
-        if self.currTok == 'OUTPUT_KW':
-            pass
+                if self.currTok == 'NEWLINE':
+                    print("is nl")
+                    self.Expects(self.currTok, 'NEWLINE')
+                elif self.currTok == 'EOF_TOKEN':
+                    print(" is eof")
+                    self.Expects(self.currTok, 'EOF_TOKEN')
+                else:
+                    print(f"Error in this token {self.currTok}")
+                    exit(1)
 
         return node_rep
 
