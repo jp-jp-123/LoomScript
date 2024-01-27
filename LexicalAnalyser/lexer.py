@@ -89,9 +89,15 @@ class Lexer:
 
                 # Basic tokenizing technique. If it hits whitespace, all in the buffer is one token
                 elif char.isspace():
+                    # store the line no without modifying the self.LineNo
+                    # This is for avoiding labeling the last lexeme in the next line
+                    line = self.lineNo
+
                     # Checks if buffer has contents
                     if self.buffer:
-                        self.Tokenizer(self.lineNo, self.buffer)
+                        if char == '\n':
+                            line -= 1
+                        self.Tokenizer(line, self.buffer)
                         self.BufferClear()
 
                 elif char in SPECIAL_CHARACTERS:
