@@ -1,6 +1,5 @@
 from LexicalAnalyser.tokens import *
 from charset import *
-from collections import OrderedDict
 
 '''
 utilizes only one buffer and clearer stopFlag logics in an effort to make a clearer and efficient lexer.
@@ -95,10 +94,15 @@ class Lexer:
 
                     # Checks if buffer has contents
                     if self.buffer:
+                        # Check if the space is a new line, tokenize a NEWLINE if true
                         if char == '\n':
                             line -= 1
-                        self.Tokenizer(line, self.buffer)
-                        self.BufferClear()
+                            self.Tokenizer(line, self.buffer)
+                            self.tokenTable.append((line, char, 'NEWLINE'))
+                        else:
+                            self.Tokenizer(line, self.buffer)
+
+                    self.BufferClear()
 
                 elif char in SPECIAL_CHARACTERS:
                     # If a special char is hit after taking an alphanum, it means it is a separate token
