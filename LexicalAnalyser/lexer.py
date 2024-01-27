@@ -101,6 +101,11 @@ class Lexer:
                             self.tokenTable.append((line, char, 'NEWLINE'))
                         else:
                             self.Tokenizer(line, self.buffer)
+                    else:
+                        # Check if the space is a new line, tokenize a NEWLINE if true
+                        if char == '\n':
+                            line -= 1
+                            self.tokenTable.append((line, char, 'NEWLINE'))
 
                     self.BufferClear()
 
