@@ -24,31 +24,31 @@ KEYWORDS = {
 }
 
 SPECIAL_CHARACTERS = {
-    '.': "PERIOD",
-    '+': "PLUS",
-    '-': "HYPHEN",
-    '*': "ASTERISK",
-    '/': "SLASH",
-    '%': "PERCENT",
-    '<': "OPEN_ANGLE_BRACKET",
-    '>': "CLOSE_ANGLED_BRACKET",
+    '.': "PERIOD_SC",
+    '+': "PLUS_SC",
+    '-': "HYPHEN_SC",
+    '*': "ASTERISK_SC",
+    '/': "SLASH_SC",
+    '%': "PERCENT_SC",
+    '<': "OP_ABRACK_SC",
+    '>': "CLO_ABRACK_SC",
     '=': "EQUAL",
-    '\"': "DOUBLE_QUOTATION",
-    '\'': "SINGLE_QUOTATION",
-    ',': "COMMA",
-    ';': "SEMICOLON",
-    '|': "PIPE",
-    '!': "EXCLAMATION",
-    '(': "OPEN_PARENTHESIS",
-    ')': "CLOSE_PARENTHESIS",
-    '[': "OPEN_SQUARE_BRACKET",
-    ']': "CLOSE_SQUARE_BRACKET",
-    '{': "OPEN_CURLY_BRACKET",
-    '}': "CLOSE_CURLY_BRACKET",
-    '_': "UNDERSCORE",
-    '^': "CARET",
-    '~': "TILDE",
-    '&': "AMPERSAND",
+    '\"': "DQUOTE_SC",
+    '\'': "SQUOTE_SC",
+    ',': "COMMA_SC",
+    ';': "SEMICOLON_SC",
+    '|': "PIPE_SC",
+    '!': "EXCLAMATION_SC",
+    '(': "LPAREN_SC",
+    ')': "RPAREN_SC",
+    '[': "LSQBRACK_SC",
+    ']': "RSQBRACK_SC",
+    '{': "LCBRACK_SC",
+    '}': "RCBRACK_SC",
+    '_': "UNDERSCORE_SC",
+    '^': "CARET_SC",
+    '~': "TILDE_SC",
+    '&': "AMPERSAND_SC",
     ' ': "SPACE"
 }
 
@@ -81,4 +81,11 @@ DOUBLE_OPERATORS = {
     '<=': "LESS_THAN_EQUAL",
     '||': "OR_OP",
     '&&': "AND_OP"
+}
+
+UNARY_OPS = {
+    '++': "UNARY_INCREMENT",
+    '--': "UNARY_DECREMENT",
+    '+': "UNARY_ADD",
+    '-': "UNARY_SUBTRACT"
 }

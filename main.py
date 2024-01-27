@@ -1,5 +1,6 @@
 from LexicalAnalyser import lexer
 import os
+import csv
 
 
 class Main:
@@ -7,8 +8,9 @@ class Main:
     def __init__(self):
         self.outs = None
         self.lxc = None
-        self.src = "TestCase/test.loom"
+        self.src = "TestCase/test1.loom"
         self.dest = 'SymbolTable.txt'
+        self.destcsv = 'SymbolTable.csv'
 
     def CheckFileExtension(self):
         if os.path.isfile(self.src):
@@ -17,7 +19,7 @@ class Main:
                 self.lxc.SourceToLexemes(self.src)
 
                 self.outs = self.lxc.tokenTable
-                self.WriteFile()
+                self.Driver()
             else:
                 print("Wrong File Format")
 
@@ -45,6 +47,29 @@ class Main:
 
         except Exception as e:
             print("Error Found", e)
+
+    def WriteCSV(self):
+        try:
+            # Open the file in write mode
+            with open(self.destcsv, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['lineNo', 'Lexeme', 'Token'])
+                writer.writerows(self.outs)
+
+            print(f"Successfully Written to {self.destcsv}")
+
+        except Exception as e:
+            print("Error Found", e)
+
+    def Driver(self):
+        i = input("Write to Formatted .txt? N=No, Any Other Keys=Yes: ")
+
+        if i == 'N' or i == 'n':
+            self.WriteCSV()
+
+        else:
+            self.WriteCSV()
+            self.WriteFile()
 
 
 if __name__ == '__main__':

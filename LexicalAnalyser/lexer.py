@@ -35,6 +35,9 @@ class Lexer:
             self.lineLength = len(perLine)
             self.LexemeParser(perLine)
 
+        if self.buffer:
+            self.Tokenizer(self.lineNo, self.buffer)
+            self.BufferClear()
         self.tokenTable.append((self.lineNo, 'EOF', "EOF_TOKEN"))
 
     def LexemeParser(self, lexemes: str):
