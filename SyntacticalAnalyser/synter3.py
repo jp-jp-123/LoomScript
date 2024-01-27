@@ -112,23 +112,30 @@ class Synter:
         if self.currTok == 'IDENTIFIER':                                # Identifier
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
+
             # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in expt.all_op:
+            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN':
                 self.Error(self.currTok, "OPERATORS")
+
         elif self.currTok == 'NUM_LITERAL':                             # NUM_LITERALS
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
-            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in expt.all_op:
-                self.Error(self.currTok, "OPERATORS")
             self.Advance()
+
+            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
+            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN':
+                self.Error(self.currTok, "OPERATORS")
+
         elif self.currTok == 'STRING_LITERAL':                          # STRING_LITERALS
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
+
             # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in expt.all_op:
+            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN':
                 self.Error(self.currTok, "OPERATORS")
+
         elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
             node_rep = self.ParenExpr()
+
         elif self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:   # UNARIES
             # Switching all of them to unary except add
             if self.currTok == 'ARITHMETIC_SUBTRACT':
@@ -152,6 +159,7 @@ class Synter:
             # else:
             # Makes node where any literals or idents are on the right (as expected)
             node_rep = self.MakeNode(op, None, node)
+
         else:
             # TODO: Add support for postfix unaries
             self.Error(self.currTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
