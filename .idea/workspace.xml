@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="initial Syntactical Analyser build">
-      <change afterPath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" afterDir="false" />
+    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="Added lookahead for atoms">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/lexer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LexicalAnalyser/tokens.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyser/tokens.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SymbolTable.txt" beforeDir="false" afterPath="$PROJECT_DIR$/SymbolTable.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/Synter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestCase/test3.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test3.loom" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,56 +56,6 @@
       <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript" />
       <recent name="C:\Users\Lenovo\Documents\GitHub\LoomScript\LexicalAnalyser" />
     </key>
-  </component>
-  <component name="RunManager">
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="LoomScript" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="scratch_1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="LoomScript" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.scratch_1" />
-        <item itemvalue="Python.main" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -303,7 +248,14 @@
       <option name="project" value="LOCAL" />
       <updated>1706199948579</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="fixed lexer bugs. Additional syntax error support for synter3.py">
+      <created>1706318499812</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1706318499812</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -348,7 +300,9 @@
     <MESSAGE value="added symbol table txt file. Added file extension checking" />
     <MESSAGE value="added line no tracking to lex output&#10;added syntactical analyser scratch" />
     <MESSAGE value="fix buffer content untokenized on line:139" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix buffer content untokenized on line:139" />
+    <MESSAGE value="fixed lexer bugs. Additional syntax error support for synter3.py" />
+    <MESSAGE value="Added lookahead for atoms" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added lookahead for atoms" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -360,7 +314,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/SyntacticalAnalyser/synter3.py</url>
-          <line>185</line>
+          <line>194</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

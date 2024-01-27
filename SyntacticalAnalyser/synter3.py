@@ -112,12 +112,21 @@ class Synter:
         if self.currTok == 'IDENTIFIER':                                # Identifier
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
+            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
+            if self.currTok not in expt.all_op:
+                self.Error(self.currTok, "OPERATORS")
         elif self.currTok == 'NUM_LITERAL':                             # NUM_LITERALS
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
+            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
+            if self.currTok not in expt.all_op:
+                self.Error(self.currTok, "OPERATORS")
             self.Advance()
         elif self.currTok == 'STRING_LITERAL':                          # STRING_LITERALS
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
+            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
+            if self.currTok not in expt.all_op:
+                self.Error(self.currTok, "OPERATORS")
         elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
             node_rep = self.ParenExpr()
         elif self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:   # UNARIES
@@ -134,7 +143,6 @@ class Synter:
             self.Advance()
             # Lookahead, Unaries expect these things. If not satisfied, proceed to syntax error
             if self.currTok not in ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC']:
-                print('this error')
                 self.Error(op, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
 
             # Call Expression() again with precedence same to UNARY_SUBTRACT. Any prefix unaries are fine
@@ -145,6 +153,7 @@ class Synter:
             # Makes node where any literals or idents are on the right (as expected)
             node_rep = self.MakeNode(op, None, node)
         else:
+            # TODO: Add support for postfix unaries
             self.Error(self.currTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
 
         # Try catch block for Key Error due to self.currTok to unintended tokens for the while loop
@@ -192,7 +201,9 @@ class Synter:
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
             # print(node_rep)
         else:
-            self.Expects("Unbalanced Parenthesis", self.sc['('])
+            # TODO: Postfix unaries exits here, add support for postfix unary
+            # TODO: unexpected syntax error might exit here, test for every expression errors as you like and report
+            self.Expects(self.currTok, self.sc['('])
 
         return node_rep
 
