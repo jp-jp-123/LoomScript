@@ -167,7 +167,7 @@ class Synter:
         # Try catch block for Key Error due to self.currTok to unintended tokens for the while loop
         try:
             #  Condition for expression. Check if it's a binary and precedence is >= to p
-            while expt.math[self.currTok][1] and expt.math[self.currTok][2] >= p:
+            while expt.all_op[self.currTok][1] and expt.all_op[self.currTok][2] >= p:
                 # Save the current token to op
                 op = self.currTok
 
@@ -177,10 +177,10 @@ class Synter:
                     self.Error(self.beforeTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC'")
 
                 # Get the precedence of op/saved token
-                op_prec = expt.math[op][2]
+                op_prec = expt.all_op[op][2]
 
                 # Check is has left assoc, add 1 to precedence
-                if not expt.math[op][0]:
+                if not expt.all_op[op][0]:
                     op_prec += 1
 
                 # call Expression() again, and save the node_rep to node

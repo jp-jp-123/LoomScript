@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="Added lookahead for atoms">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="Added lookahead for atoms. Fixed syntax error conditions">
       <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestCase/test3.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test3.loom" afterDir="false" />
     </list>
@@ -261,7 +260,14 @@
       <option name="project" value="LOCAL" />
       <updated>1706354530735</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Added lookahead for atoms. Fixed syntax error conditions">
+      <created>1706355413861</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1706355413861</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -308,7 +314,8 @@
     <MESSAGE value="fix buffer content untokenized on line:139" />
     <MESSAGE value="fixed lexer bugs. Additional syntax error support for synter3.py" />
     <MESSAGE value="Added lookahead for atoms" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added lookahead for atoms" />
+    <MESSAGE value="Added lookahead for atoms. Fixed syntax error conditions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added lookahead for atoms. Fixed syntax error conditions" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
