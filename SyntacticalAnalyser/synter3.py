@@ -84,6 +84,7 @@ class Synter:
         # Makes a leaf node but not connected to anything yet
         return Synter.Node(nodeType, value=n)
 
+    # TODO: Add more robust method for error handling/unify Expects() and Error() in one method
     def Expects(self, msg, token):
         if self.currTok == token:
             self.Advance()
@@ -97,9 +98,9 @@ class Synter:
 
     def ParenExpr(self):
         # Build the expression inside the parenthesis here
-        self.Expects("Unbalanced Parenthesis", self.sc['('])
+        self.Expects(self.currTok, self.sc['('])
         node = self.Expression(1)
-        self.Expects("Unbalanced Parenthesis", self.sc[')'])
+        self.Expects(self.currTok, self.sc[')'])
         return node
 
     def Expression(self, precedence):
@@ -113,25 +114,34 @@ class Synter:
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
 
-            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN':
-                self.Error(self.currTok, "OPERATORS")
+            # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
+            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC':
+                if self.currTok == 'NEWLINE':
+                    return node_rep
+                else:
+                    self.Error(self.currTok, "OPERATORS")
 
         elif self.currTok == 'NUM_LITERAL':                             # NUM_LITERALS
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
 
-            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN':
-                self.Error(self.currTok, "OPERATORS")
+            # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
+            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC':
+                if self.currTok == 'NEWLINE':
+                    return node_rep
+                else:
+                    self.Error(self.currTok, "OPERATORS")
 
         elif self.currTok == 'STRING_LITERAL':                          # STRING_LITERALS
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
 
-            # Lookahead, Atoms expect these things. If not satisfied, proceed to syntax error
-            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN':
-                self.Error(self.currTok, "OPERATORS")
+            # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
+            if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC':
+                if self.currTok == 'NEWLINE':
+                    return node_rep
+                else:
+                    self.Error(self.currTok, "OPERATORS")
 
         elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
             node_rep = self.ParenExpr()
@@ -207,11 +217,17 @@ class Synter:
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
-            # print(node_rep)
         else:
             # TODO: Postfix unaries exits here, add support for postfix unary
             # TODO: unexpected syntax error might exit here, test for every expression errors as you like and report
-            self.Expects(self.currTok, self.sc['('])
+            if self.currTok == 'RPAREN_SC':
+                # RPAREN_SC at the end exits here, this catches it for new
+                self.Expects(self.currTok, self.sc['('])
+            else:
+                self.Expects(self.currTok, 'NEWLINE')
+
+        if self.currTok == 'OUTPUT_KW':
+            pass
 
         return node_rep
 
