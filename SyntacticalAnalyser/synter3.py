@@ -268,22 +268,6 @@ class Synter:
             self.Expects(self.currTok, self.sc['{'])
             self.Advance()
 
-            # TODO: Find a way to create a code block tree
-            '''right_leaf_blocks = []
-            while True:
-                right_leaf = right_leaf_blocks.append(self.Statement())
-
-                if self.currTok == self.sc['}']:
-                    break
-                elif self.currTok == 'EOF_TOKEN':
-                    self.Expects(self.currTok, self.sc['}'])
-                else:
-                    pass'''
-
-            '''right_leaf = self.Statement()
-            node_rep = self.MakeNode('SET_KW', left_leaf, self.MakeNode('BLOCK', right_leaf, None))
-            self.Advance()'''
-
             while self.currTok != self.sc['}']:
                 # Same logic as expressions, NEWLINES just returns None and should be ignored
                 right_node = self.Statement()
