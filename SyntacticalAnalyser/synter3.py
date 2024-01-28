@@ -26,6 +26,7 @@ class Synter:
         self.lexerOut = None
         self.symTable = None
         self.symTIndex = 0
+        self.farLook = 0
 
         self.beforeTok = None
         self.currTok = None
@@ -71,12 +72,28 @@ class Synter:
         self.currTokVar = self.symTable[i][1]
         self.currLine = self.symTable[i][0]
 
-    def Advance(self):
+    def Advance(self, far_look=0):
         # Advance to next token
         self.symTIndex += 1
 
+        # local isFarLook
+        isFarLook = False
+
+        # for farther (>1) lookahead (ex: parenthesis expecting multiple possibilities)
+        # farLook index = current + far_look
+        if far_look > 0:
+            isFarLook = True
+            self.farLook = self.symTIndex + far_look
+
+        # has far_look or not, still advances to the next token. The far look index is just not consumed
         if self.symTIndex < len(self.symTable):
             self.GetToken()
+            # returns token value of the specified lookahead index, returns EOF others
+            if isFarLook:
+                if far_look < len(self.symTable):
+                    return self.symTable[self.farLook][2]
+                else:
+                    return 'EOF_TOKEN'
 
     def MakeNode(self, nodeType, left, right=None, n=None):
         return Synter.Node(nodeType, left, right, value=n)
@@ -97,11 +114,22 @@ class Synter:
         print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
 
+    def ExitCond(self, custom=None):
+        if custom:
+            self.Expects(self.currTok, custom)
+        if self.currTok == 'NEWLINE':
+            self.Expects(self.currTok, 'NEWLINE')
+        elif self.currTok == 'EOF_TOKEN':
+            self.Expects(self.currTok, 'EOF_TOKEN')
+        else:
+            print(f"Error in this token {self.currTok}")
+            exit(1)
+
     def ParenExpr(self, expected_expr=None):
         # Build the expression inside the parenthesis here
         self.Expects(self.currTok, self.sc['('])
         if expected_expr:
-            node = self.Expects(self.currTok, 'STRING_LITERAL')
+            node = self.Expects(self.currTok, expected_expr)
         else:
             node = self.Expression(1)
 
@@ -139,13 +167,16 @@ class Synter:
         elif self.currTok == 'STRING_LITERAL':                          # STRING_LITERALS
             node_rep = self.LookaheadAtom()
 
-        elif self.currTok == 'INP_KW':
+        elif self.currTok == 'INP_KW':                                  # INPUT KEYWORD
             node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
             self.Advance()
             self.ParenExpr(expected_expr='STRING_LITERAL')
 
         elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
             node_rep = self.ParenExpr()
+
+        elif self.currTok == 'NEWLINE':
+            self.Advance()
 
         elif self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:   # UNARIES
             # Switching all of them to unary except add
@@ -159,12 +190,13 @@ class Synter:
                 op = 'ARITHMETIC_ADD'
 
             self.Advance()
+
             # Lookahead, Unaries expect these things. If not satisfied, proceed to syntax error
             if self.currTok not in self.validAtoms:
-                self.Error(op, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
+                self.Error(op, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW'")
 
             # Call Expression() again with precedence same to UNARY_SUBTRACT. Any prefix unaries are fine
-            node = self.Expression(expt.unary_pref['UNARY_SUBTRACT'][2])
+            node = self.Expression(expt.all_op['UNARY_SUBTRACT'][2])
             node_rep = self.MakeNode(op, None, node)
 
         else:
@@ -215,16 +247,55 @@ class Synter:
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
-            if self.currTok == 'NEWLINE':
-                self.Expects(self.currTok, 'NEWLINE')
-            elif self.currTok == 'EOF_TOKEN':
-                self.Expects(self.currTok, 'EOF_TOKEN')
-            else:
-                print(f"Error in this token {self.currTok}")
-                exit(1)
+            self.ExitCond()
 
         elif self.currTok == 'OUT_KW':
-            print("i can see here")
+            self.Advance()
+            right_leaf = self.ParenExpr()
+            node_rep = self.MakeNode('OUT_KW', None, right_leaf)
+            self.ExitCond()
+
+        elif self.currTok == 'SET_KW':
+            expect = self.Advance(far_look=1)
+            left_leaf = None
+            if expect == 'STRING_LITERAL':
+                left_leaf = self.ParenExpr(expected_expr='STRING_LITERAL')
+            elif expect == 'IDENTIFIER':
+                left_leaf = self.ParenExpr(expected_expr='IDENTIFIER')
+            else:
+                self.Error(expect, "'STRING_LITERAL', IDENTIFIER")
+
+            self.Expects(self.currTok, self.sc['{'])
+            self.Advance()
+
+            # TODO: Find a way to create a code block tree
+            '''right_leaf_blocks = []
+            while True:
+                right_leaf = right_leaf_blocks.append(self.Statement())
+
+                if self.currTok == self.sc['}']:
+                    break
+                elif self.currTok == 'EOF_TOKEN':
+                    self.Expects(self.currTok, self.sc['}'])
+                else:
+                    pass'''
+
+            '''right_leaf = self.Statement()
+            node_rep = self.MakeNode('SET_KW', left_leaf, self.MakeNode('BLOCK', right_leaf, None))
+            self.Advance()'''
+
+            while self.currTok != self.sc['}']:
+                # Same logic as expressions, NEWLINES just returns None and should be ignored
+                right_node = self.Statement()
+                if right_node == None:
+                    pass
+                else:
+                    node_rep = self.MakeNode('BODY', node_rep, right_node)
+
+            self.ExitCond(custom=self.sc['}'])
+
+        elif self.currTok == 'NEWLINE':
+            self.Advance()
 
         else:
             # TODO: Postfix unaries exits here, add support for postfix unary
@@ -234,7 +305,7 @@ class Synter:
                 self.Expects(self.currTok, self.sc['('])
             else:
                 if self.currTok == 'NEWLINE':
-                    print("is nl")
+                    print("is nl", self.currTok)
                     self.Expects(self.currTok, 'NEWLINE')
                 elif self.currTok == 'EOF_TOKEN':
                     print(" is eof")

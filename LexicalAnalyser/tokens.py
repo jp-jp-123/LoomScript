@@ -12,6 +12,7 @@ KEYWORDS = {
     "IF": "IF_KW",
     "INPUT": "INP_KW",
     "LOOP": "LOOP_KW",
+    "NULL": "NULL_KW",
     "NUM": "NUM_KW",
     "NUMBER": "NUM_KW",
     "OUTPUT": "OUT_KW",
@@ -88,4 +89,11 @@ UNARY_OPS = {
     '--': "UNARY_DECREMENT",
     '+': "UNARY_ADD",
     '-': "UNARY_SUBTRACT"
+}
+
+SPECIAL_TOK = {
+    '\n': "NEWLINE",
+    'str': "STRING_LITERAL",
+    'num': "NUM_LITERAL",
+    'err_tok': "ERROR_TOKEN"
 }
