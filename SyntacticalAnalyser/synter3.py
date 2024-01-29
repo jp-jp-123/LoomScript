@@ -306,14 +306,23 @@ class Synter:
         self.Generate(path)
 
         # Start parsing by getting the first/index 0 token, call the statement() to see where to branch off
-        t = None
+        tree = None
         self.GetToken()
         while True:
-            t = self.MakeNode('SEQUENCE', t, self.Statement())
+            node_result = self.Statement()
+
+            # Filters the result of the node
+            if tree is None:
+                # if it is none, store it back to tree, avoids creating nodes that doesn't contain anything
+                tree = node_result
+            else:
+                # if it contains anything, create a node
+                if tree is not None:
+                    tree = self.MakeNode('SEQUENCE', tree, node_result)
             if self.currTok == "EOF_TOKEN":
                 break
 
-        return t
+        return tree
 
 
 if __name__ == '__main__':
