@@ -276,6 +276,8 @@ class Synter:
                 else:
                     node_rep = self.MakeNode('BODY', node_rep, right_node)
 
+            node_rep = self.MakeNode('SET_KW', left_leaf, node_rep)
+
             self.ExitCond(custom=self.sc['}'])
 
         elif self.currTok == 'NEWLINE':
