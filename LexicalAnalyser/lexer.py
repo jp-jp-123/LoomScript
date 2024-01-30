@@ -238,7 +238,14 @@ class Lexer:
 
         # Check if buffer is a KEYWORD
         elif lexeme in KEYWORDS:
-            self.tokenTable.append((lineNo, lexeme, KEYWORDS[lexeme]))
+            if lexeme == 'ELSE':
+                if self.tokenTable[-1][2] == 'IF_KW':
+                    # Detected that it is an IF ELSE statement, replaces the lst IF with IF_ELSE_TOK
+                    self.tokenTable[-1] = (lineNo, 'IF_ELSE', SPECIAL_TOK['ifelse'])
+                else:
+                    self.tokenTable.append((lineNo, lexeme, KEYWORDS[lexeme]))
+            else:
+                self.tokenTable.append((lineNo, lexeme, KEYWORDS[lexeme]))
 
         # Check if buffer is an INT LITERAL
         elif lexeme.replace('.', '').isdigit():

@@ -30,7 +30,7 @@ class Synter:
 
         self.beforeTok = None
         self.currTok = None
-        self.currTokVar = None
+        self.currTokVal = None
         self.currLine = None
 
         self.kw = tokens.KEYWORDS
@@ -68,32 +68,26 @@ class Synter:
         i = self.symTIndex
 
         self.beforeTok = self.symTable[-1 + i][2]
+        self.beforeTokVal = self.symTable[-1 + i][1]
         self.currTok = self.symTable[i][2]
-        self.currTokVar = self.symTable[i][1]
+        self.currTokVal = self.symTable[i][1]
         self.currLine = self.symTable[i][0]
 
-    def Advance(self, far_look=0):
+    def Advance(self):
         # Advance to next token
         self.symTIndex += 1
-
-        # local isFarLook
-        isFarLook = False
-
-        # for farther (>1) lookahead (ex: parenthesis expecting multiple possibilities)
-        # farLook index = current + far_look
-        if far_look > 0:
-            isFarLook = True
-            self.farLook = self.symTIndex + far_look
 
         # has far_look or not, still advances to the next token. The far look index is just not consumed
         if self.symTIndex < len(self.symTable):
             self.GetToken()
-            # returns token value of the specified lookahead index, returns EOF others
-            if isFarLook:
-                if far_look < len(self.symTable):
-                    return self.symTable[self.farLook][2]
-                else:
-                    return 'EOF_TOKEN'
+
+    def Lookahead(self, steps=0):
+        look_idx = self.symTIndex + steps
+
+        if look_idx < len(self.symTable):
+            return self.symTable[look_idx][2]
+        else:
+            return self.symTable[-1][2]
 
     def MakeNode(self, nodeType, left, right=None, n=None):
         return Synter.Node(nodeType, left, right, value=n)
@@ -114,22 +108,35 @@ class Synter:
         print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
 
-    def ExitCond(self, custom=None):
-        if custom:
-            self.Expects(self.currTok, custom)
-        if self.currTok == 'NEWLINE':
-            self.Expects(self.currTok, 'NEWLINE')
-        elif self.currTok == 'EOF_TOKEN':
-            self.Expects(self.currTok, 'EOF_TOKEN')
+    def Skips(self, items: list, equal_to=True):
+        if equal_to:
+            while self.currTok == items:
+                self.Advance()
+                if self.currTok == 'EOF_TOKEN':
+                    break
+                elif self.currTok != 'NEWLINE':
+                    break
+                else:
+                    pass
         else:
-            print(f"Error in this token {self.currTok}")
-            exit(1)
+            while self.currTok != items:
+                self.Advance()
+                if self.currTok == 'EOF_TOKEN':
+                    break
+                elif self.currTok != 'NEWLINE':
+                    break
+                else:
+                    pass
+
+        return
 
     def ParenExpr(self, expected_expr=None):
         # Build the expression inside the parenthesis here
         self.Expects(self.currTok, self.sc['('])
         if expected_expr:
-            node = self.Expects(self.currTok, expected_expr)
+            self.Expects(self.currTok, expected_expr)
+            # Since expects already advances the statements, we use beforeTok to return what we need
+            node = self.MakeLeaf(self.beforeTokVal, self.beforeTok)
         else:
             node = self.Expression(1)
 
@@ -137,7 +144,7 @@ class Synter:
         return node
 
     def LookaheadAtom(self):
-        node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
+        node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
         self.Advance()
 
         # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
@@ -168,7 +175,7 @@ class Synter:
             node_rep = self.LookaheadAtom()
 
         elif self.currTok == 'INP_KW':                                  # INPUT KEYWORD
-            node_rep = self.MakeLeaf(self.currTok, self.currTokVar)
+            node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
             self.Advance()
             self.ParenExpr(expected_expr='STRING_LITERAL')
 
@@ -209,7 +216,7 @@ class Synter:
             while expt.all_op[self.currTok][1] and expt.all_op[self.currTok][2] >= p:
                 # Save the current token to op
                 op = self.currTok
-                op_value = self.currTokVar
+                op_value = self.currTokVal
 
                 # Advance and check if the next token is as expected, error otherwise
                 self.Advance()
@@ -242,7 +249,7 @@ class Synter:
 
         if self.currTok == 'IDENTIFIER':
             # TODO: incomplete declaration statement
-            left_leaf = self.MakeLeaf(self.currTok, self.currTokVar)
+            left_leaf = self.MakeLeaf(self.currTok, self.currTokVal)
             self.Advance()
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
@@ -256,12 +263,13 @@ class Synter:
             self.ExitCond()
 
         elif self.currTok == 'SET_KW':
-            expect = self.Advance(far_look=1)
-            left_leaf = None
+            self.Advance()
+            expect = self.Lookahead(1)
+            cond_leaf = None
             if expect == 'STRING_LITERAL':
-                left_leaf = self.ParenExpr(expected_expr='STRING_LITERAL')
+                cond_leaf = self.ParenExpr(expected_expr='STRING_LITERAL')
             elif expect == 'IDENTIFIER':
-                left_leaf = self.ParenExpr(expected_expr='IDENTIFIER')
+                cond_leaf = self.ParenExpr(expected_expr='IDENTIFIER')
             else:
                 self.Error(expect, "'STRING_LITERAL', IDENTIFIER")
 
@@ -269,16 +277,109 @@ class Synter:
             self.Advance()
 
             while self.currTok != self.sc['}']:
-                # Same logic as expressions, NEWLINES just returns None and should be ignored
                 right_node = self.Statement()
                 if right_node == None:
                     pass
                 else:
                     node_rep = self.MakeNode('BODY', node_rep, right_node)
 
-            node_rep = self.MakeNode('SET_KW', left_leaf, node_rep)
+            head_node = self.MakeNode('SET_KW', None, cond_leaf)
+            node_rep = self.MakeNode('BODY', head_node, node_rep)
 
             self.ExitCond(custom=self.sc['}'])
+
+        elif self.currTok == 'IF_KW':
+            if_node_rep = None
+            ifelse_body_rep = None
+            ifelse_node_wrap = None
+            ifelse_blocks = []
+            else_node_rep = None
+
+            self.Advance()
+            cond_leaf = self.ParenExpr()
+            self.Expects(self.currTok, self.sc['{'])
+            self.Advance()
+
+            while self.currTok != self.sc['}']:
+                if_node = self.Statement()
+                if if_node is None:
+                    pass
+                else:
+                    if_node_rep = self.MakeNode('BODY', if_node_rep, if_node)
+
+            # Creates a node for the condition statement
+            if_cond_node = self.MakeNode('CONDITION', None, cond_leaf)
+            self.Expects(self.currTok, self.sc['}'])
+
+            # Continuously iterates over tokens until it gets the possible next value [IF_KW, ELSE_KW]
+            self.Skips(['ELSE_KW', 'IF_ELSE_TOKEN'], False)
+            print('is here')
+
+            while self.currTok == 'IF_ELSE_TOKEN':
+                # ifelse_body_rep = None
+                self.Advance()
+                ifelse_cond_leaf = self.ParenExpr()
+                self.Expects(self.currTok, self.sc['{'])
+                self.Advance()
+
+                while self.currTok != self.sc['}']:
+                    ifelse_node = self.Statement()
+                    if ifelse_node is None:
+                        pass
+                    else:
+                        ifelse_body_rep = self.MakeNode('BODY', ifelse_body_rep, ifelse_node)
+
+                # Creates a node for the condition statement
+                ifelse_cond_node = self.MakeNode('CONDITION', None, ifelse_cond_leaf)
+
+                # Build the body of the statement
+                ifelse_body_rep = self.MakeNode('IF_ELSE', ifelse_cond_node, ifelse_body_rep)
+
+                self.Expects(self.currTok, self.sc['}'])
+
+                # After creating the node, append to the list to separate the blocks of each if else
+                ifelse_blocks.append(ifelse_body_rep)
+                ifelse_body_rep = None
+
+                # Continuously iterates over tokens until it gets the possible next value [IF_KW, ELSE_KW]
+                self.Skips(['ELSE_KW', 'IF_ELSE_TOKEN'], False)
+
+            if ifelse_blocks:
+                for block in ifelse_blocks:
+                    ifelse_node_wrap = self.MakeNode('IF_ELSE_BLOCK', ifelse_node_wrap, block)
+
+            if self.currTok == 'ELSE_KW':
+                self.Advance()
+                self.Expects(self.currTok, self.sc['{'])
+                self.Advance()
+
+                while self.currTok != self.sc['}']:
+                    else_node = self.Statement()
+                    if else_node is None:
+                        pass
+                    else:
+                        else_node_rep = self.MakeNode('BODY', else_node_rep, else_node)
+
+                self.Expects(self.currTok, self.sc['}'])
+
+            if ifelse_blocks:
+                node_rep = self.MakeNode('IF_KW', None, (self.MakeNode('IF_BODY', if_cond_node, if_node_rep),
+                                                         self.MakeNode('IF_ELSE_BODY', None, ifelse_node_wrap),
+                                                         self.MakeNode('ELSE_BODY', None, else_node_rep)
+                                                         ))
+            elif len(ifelse_blocks) == 0 and else_node_rep:
+                node_rep = self.MakeNode('IF_KW', None, (self.MakeNode('IF_BODY', if_cond_node, if_node_rep),
+                                                         self.MakeNode('ELSE_BODY', None, else_node_rep)
+                                                         ))
+
+            elif len(ifelse_blocks) != 0 and else_node_rep is None:
+                node_rep = self.MakeNode('IF_KW', None, (self.MakeNode('IF_BODY', if_cond_node, if_node_rep),
+                                                         self.MakeNode('IF_ELSE_BODY', None, ifelse_node_wrap)
+                                                         ))
+
+            elif len(ifelse_blocks) == 0 and else_node_rep is None:
+                node_rep = self.MakeNode('IF_KW', None, self.MakeNode('IF_BODY', if_cond_node, if_node_rep))
+
 
         elif self.currTok == 'NEWLINE':
             self.Advance()
@@ -287,7 +388,7 @@ class Synter:
             # TODO: Postfix unaries exits here, add support for postfix unary
             # TODO: unexpected syntax error might exit here, test for every expression errors as you like and report
             if self.currTok == 'RPAREN_SC':
-                # RPAREN_SC at the end exits here, this catches it for n0w
+                # RPAREN_SC at the end exits here, this catches it for now
                 self.Expects(self.currTok, self.sc['('])
             else:
                 if self.currTok == 'NEWLINE':
@@ -297,10 +398,21 @@ class Synter:
                     print(" is eof")
                     self.Expects(self.currTok, 'EOF_TOKEN')
                 else:
-                    print(f"Error in this token {self.currTok}")
+                    print(f"Error in this token {self.beforeTok}, {self.currTok}")
                     exit(1)
 
         return node_rep
+
+    def ExitCond(self, custom=None):
+        if custom:
+            self.Expects(self.currTok, custom)
+        if self.currTok == 'NEWLINE':
+            self.Expects(self.currTok, 'NEWLINE')
+        elif self.currTok == 'EOF_TOKEN':
+            self.Expects(self.currTok, 'EOF_TOKEN')
+        else:
+            print(f"Error in this token {self.currTok}")
+            exit(1)
 
     def Parse(self):
         # Generate the Symbol Table
@@ -314,12 +426,12 @@ class Synter:
             node_result = self.Statement()
 
             # Filters the result of the node
-            if tree is None:
-                # if it is none, store it back to tree, avoids creating nodes that doesn't contain anything
-                tree = node_result
+            if node_result is None:
+                # if it is none, ignores it, avoids creating nodes that doesn't contain anything
+                pass
             else:
                 # if it contains anything, create a node
-                if tree is not None:
+                if node_result is not None:
                     tree = self.MakeNode('SEQUENCE', tree, node_result)
             if self.currTok == "EOF_TOKEN":
                 break
