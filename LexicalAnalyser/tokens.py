@@ -20,6 +20,10 @@ KEYWORDS = {
     "THEN": "THEN_KW",
     "TO": "TO_KW",
     "TODO": "TODO_KW",
+    "TOUP": "TOUP_KW",
+    "TODOWN": "TODOWN_KW",
+    "TORIGHT": "TORIGHT_KW",
+    "TOLEFT": "TOLEFT_KW",
     "TRUE": "TRUE_KW",
     "TRUEFALSE": "TRUEFALSE_KW",
 }
@@ -95,5 +99,6 @@ SPECIAL_TOK = {
     '\n': "NEWLINE",
     'str': "STRING_LITERAL",
     'num': "NUM_LITERAL",
-    'err_tok': "ERROR_TOKEN"
+    'err_tok': "ERROR_TOKEN",
+    'ifelse': "IF_ELSE_TOKEN"
 }

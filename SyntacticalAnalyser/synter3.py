@@ -1,24 +1,7 @@
 from LexicalAnalyser import lexer
 from LexicalAnalyser import tokens
 from SyntacticalAnalyser import expr_table as expt
-
-
-class ConstNode:
-    def __init__(self, tok):
-        self.token = tok
-
-    def __repr__(self):
-        return f'{self.token}'
-
-
-class BinNode:
-    def __init__(self, tok, l_node, r_node):
-        self.token = tok
-        self.lNode = l_node
-        self.rNode = r_node
-
-    def __repr__(self):
-        return f'{self.lNode}, {self.token}, {self.rNode}'
+# TODO: GET, THEN, FILEOPERATE, TODO, LOOP, TO(UP,DOWN,LEFT,RIGHT)
 
 
 class Synter:
@@ -39,6 +22,7 @@ class Synter:
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
         self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW']
+        self.invalidAtomLimits = ['EOF_TOKEN', 'RPAREN_SC', 'INP_KW']
 
     class Node:
         def __init__(self, nodeType, left=None, right=None, value=None):
@@ -130,6 +114,17 @@ class Synter:
 
         return
 
+    def ArgsExpr(self, expected_expr=None):
+        args = None
+        while self.currTok in expected_expr:
+            args = self.MakeNode('ARGUMENT', args, self.currTok)
+            self.Advance()
+            if self.currTok == self.sc[',']:
+                self.Advance()
+            else:
+                # self.Advance()
+                return args
+
     def ParenExpr(self, expected_expr=None):
         # Build the expression inside the parenthesis here
         self.Expects(self.currTok, self.sc['('])
@@ -148,7 +143,7 @@ class Synter:
         self.Advance()
 
         # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
-        if self.currTok not in expt.all_op and self.currTok != 'EOF_TOKEN' and self.currTok != 'RPAREN_SC' and self.currTok != 'INP_KW':
+        if self.currTok not in expt.all_op and self.currTok not in self.invalidAtomLimits:
             if self.currTok == 'NEWLINE':
                 # returns the node representation if self.currTok avoided illegal lookahead tokens
                 return node_rep
@@ -178,6 +173,12 @@ class Synter:
             node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
             self.Advance()
             self.ParenExpr(expected_expr='STRING_LITERAL')
+
+        elif self.currTok == 'GET_KW':
+            self.Advance()
+            self.Expects(self.currTok, self.sc['('])
+            node_rep = self.MakeNode('GET_KW', self.ArgsExpr(['IDENTIFIER', 'STRING_LITERAL']), None)
+            self.Expects(self.currTok, self.sc[')'])
 
         elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
             node_rep = self.ParenExpr()
@@ -288,6 +289,9 @@ class Synter:
 
             self.ExitCond(custom=self.sc['}'])
 
+        elif self.currTok == 'FILEOP_KW':
+            pass
+
         elif self.currTok == 'IF_KW':
             if_node_rep = None
             ifelse_body_rep = None
@@ -313,10 +317,8 @@ class Synter:
 
             # Continuously iterates over tokens until it gets the possible next value [IF_KW, ELSE_KW]
             self.Skips(['ELSE_KW', 'IF_ELSE_TOKEN'], False)
-            print('is here')
 
             while self.currTok == 'IF_ELSE_TOKEN':
-                # ifelse_body_rep = None
                 self.Advance()
                 ifelse_cond_leaf = self.ParenExpr()
                 self.Expects(self.currTok, self.sc['{'])
@@ -379,7 +381,6 @@ class Synter:
 
             elif len(ifelse_blocks) == 0 and else_node_rep is None:
                 node_rep = self.MakeNode('IF_KW', None, self.MakeNode('IF_BODY', if_cond_node, if_node_rep))
-
 
         elif self.currTok == 'NEWLINE':
             self.Advance()
