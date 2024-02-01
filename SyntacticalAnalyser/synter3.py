@@ -1,7 +1,9 @@
 from LexicalAnalyser import lexer
 from LexicalAnalyser import tokens
 from SyntacticalAnalyser import expr_table as expt
-# TODO: GET, THEN, FILEOPERATE, TODO, LOOP, TO(UP,DOWN,LEFT,RIGHT)
+
+
+# TODO: LOOP
 
 
 class Synter:
@@ -15,13 +17,15 @@ class Synter:
         self.currTok = None
         self.currTokVal = None
         self.currLine = None
+        self.savedExpectedTok = None
+        self.savedExpectedVal = None
 
         self.kw = tokens.KEYWORDS
         self.sc = tokens.SPECIAL_CHARACTERS
         self.op = tokens.OPERATORS
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
-        self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW']
+        self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW', 'GET_KW']
         self.invalidAtomLimits = ['EOF_TOKEN', 'RPAREN_SC', 'INP_KW']
 
     class Node:
@@ -85,7 +89,7 @@ class Synter:
         if self.currTok == token:
             self.Advance()
             return
-        print(f"{msg}: Expecting '{token}', found '{self.beforeTok}', in line: {self.currLine}")
+        print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
 
     def Error(self, msg, token):
@@ -115,28 +119,83 @@ class Synter:
         return
 
     def ArgsExpr(self, expected_expr=None):
+        # Similar to ParenExpr(), except this handles multiple arguments instead of expression
         args = None
+        self.Expects(self.currTok, self.sc['('])
         while self.currTok in expected_expr:
             args = self.MakeNode('ARGUMENT', args, self.currTok)
             self.Advance()
             if self.currTok == self.sc[',']:
                 self.Advance()
             else:
-                # self.Advance()
+                # Finds the closing paren before returning
+                self.Expects(self.currTok, self.sc[')'])
                 return args
 
-    def ParenExpr(self, expected_expr=None):
+    def ParenExpr(self, func, parens: list, expected_expr=None):
         # Build the expression inside the parenthesis here
-        self.Expects(self.currTok, self.sc['('])
+
+        self.Expects(self.currTok, self.sc[parens[0]])
         if expected_expr:
             self.Expects(self.currTok, expected_expr)
             # Since expects already advances the statements, we use beforeTok to return what we need
-            node = self.MakeLeaf(self.beforeTokVal, self.beforeTok)
+            self.savedExpectedTok = self.beforeTok
+            self.savedExpectedVal = self.beforeTokVal
+            node = self.MakeLeaf(self.beforeTokVal, self.savedExpectedTok)
         else:
-            node = self.Expression(1)
+            if func == self.Expression:
+                node = func(1)
+            else:
+                self.Advance()  # Skips the associated NEWLINE after the bracket
+                node = func()
 
-        self.Expects(self.currTok, self.sc[')'])
+        self.Expects(self.currTok, self.sc[parens[1]])
         return node
+
+    def SDLCExpression(self):
+        # still broken
+        node_rep = None
+
+        if self.currTok == 'NEWLINE':
+            self.Skips(['IDENTIFIER', 'STRING_LITERAL', self.sc['}']], False)
+            if self.currTok in ['IDENTIFIER', 'STRING_LITERAL']:
+                pass
+            elif self.currTok == self.sc['}']:
+                pass
+
+        if self.currTok in ['IDENTIFIER', 'STRING_LITERAL']:
+            node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
+            self.Advance()
+            if self.currTok == 'NEWLINE':
+                pass
+            else:
+                self.Expects(self.currTok, self.sc[':'])
+
+
+
+        while self.currTok not in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
+            direction = self.currTok
+            self.Advance()
+
+            if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
+                # print('breaking', node_rep)
+                return node_rep
+
+            self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='NUM_LITERAL')
+
+            # If we get to this statement it means we got the expected expression inside the (), use saveExpected to
+            # retrieve last value and make the condition leaf
+            head_leaf = self.MakeNode(direction, self.MakeLeaf(self.savedExpectedTok, self.savedExpectedVal), None)
+            self.Expects(self.currTok, self.sc[':'])
+
+            node = self.SDLCExpression()
+
+            node_rep = self.MakeNode(head_leaf, node_rep, node)
+            # print('nodes', node_rep)
+            return node_rep
+
+        # print('last node', node_rep)
+        return node_rep
 
     def LookaheadAtom(self):
         node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
@@ -160,33 +219,31 @@ class Synter:
         p = precedence
 
         # This if-else block checks for "Atoms"
-        if self.currTok == 'IDENTIFIER':                                # Identifier
+        if self.currTok == 'IDENTIFIER':  # Identifier
             node_rep = self.LookaheadAtom()
 
-        elif self.currTok == 'NUM_LITERAL':                             # NUM_LITERALS
+        elif self.currTok == 'NUM_LITERAL':  # NUM_LITERALS
             node_rep = self.LookaheadAtom()
 
-        elif self.currTok == 'STRING_LITERAL':                          # STRING_LITERALS
+        elif self.currTok == 'STRING_LITERAL':  # STRING_LITERALS
             node_rep = self.LookaheadAtom()
 
-        elif self.currTok == 'INP_KW':                                  # INPUT KEYWORD
+        elif self.currTok == 'INP_KW':  # INPUT KEYWORD
             node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
             self.Advance()
-            self.ParenExpr(expected_expr='STRING_LITERAL')
+            self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='STRING_LITERAL')
 
         elif self.currTok == 'GET_KW':
             self.Advance()
-            self.Expects(self.currTok, self.sc['('])
             node_rep = self.MakeNode('GET_KW', self.ArgsExpr(['IDENTIFIER', 'STRING_LITERAL']), None)
-            self.Expects(self.currTok, self.sc[')'])
 
-        elif self.currTok == self.sc['(']:                              # START OF PARENTHESIS EXPR
-            node_rep = self.ParenExpr()
+        elif self.currTok == self.sc['(']:  # START OF PARENTHESIS EXPR
+            node_rep = self.ParenExpr(self.Expression, parens=['(', ')'])
 
         elif self.currTok == 'NEWLINE':
             self.Advance()
 
-        elif self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:   # UNARIES
+        elif self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:  # UNARIES
             # Switching all of them to unary except add
             if self.currTok == 'ARITHMETIC_SUBTRACT':
                 op = 'UNARY_SUBTRACT'
@@ -201,7 +258,7 @@ class Synter:
 
             # Lookahead, Unaries expect these things. If not satisfied, proceed to syntax error
             if self.currTok not in self.validAtoms:
-                self.Error(op, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW'")
+                self.Error(op, self.validAtoms)
 
             # Call Expression() again with precedence same to UNARY_SUBTRACT. Any prefix unaries are fine
             node = self.Expression(expt.all_op['UNARY_SUBTRACT'][2])
@@ -211,7 +268,7 @@ class Synter:
             # TODO: Add support for postfix unaries
             self.Error(self.currTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
 
-        # Try catch block for Key Error due to self.currTok to unintended tokens for the while loop
+        # Try catch block for Key Error due to self.currTok to getting unintended tokens for the while loop
         try:
             #  Condition for expression. Check if it's a binary and precedence is >= to p
             while expt.all_op[self.currTok][1] and expt.all_op[self.currTok][2] >= p:
@@ -259,7 +316,7 @@ class Synter:
 
         elif self.currTok == 'OUT_KW':
             self.Advance()
-            right_leaf = self.ParenExpr()
+            right_leaf = self.ParenExpr(self.Expression, parens=['(', ')'])
             node_rep = self.MakeNode('OUT_KW', None, right_leaf)
             self.ExitCond()
 
@@ -268,9 +325,9 @@ class Synter:
             expect = self.Lookahead(1)
             cond_leaf = None
             if expect == 'STRING_LITERAL':
-                cond_leaf = self.ParenExpr(expected_expr='STRING_LITERAL')
+                cond_leaf = self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='STRING_LITERAL')
             elif expect == 'IDENTIFIER':
-                cond_leaf = self.ParenExpr(expected_expr='IDENTIFIER')
+                cond_leaf = self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='IDENTIFIER')
             else:
                 self.Error(expect, "'STRING_LITERAL', IDENTIFIER")
 
@@ -290,7 +347,34 @@ class Synter:
             self.ExitCond(custom=self.sc['}'])
 
         elif self.currTok == 'FILEOP_KW':
-            pass
+            self.Advance()
+            node_rep = self.MakeNode('FILEOP_KW', self.ArgsExpr(['IDENTIFIER', 'STRING_LITERAL']), None)
+
+        elif self.currTok == 'TODO_KW':
+            self.Advance()
+            node_rep = self.MakeNode('TODO_KW', self.ArgsExpr(['IDENTIFIER', 'STRING_LITERAL']), None)
+
+        elif self.currTok == 'SDLC_KW':
+            self.Advance()
+            t = None
+            self.Expects(self.currTok, self.sc['{'])
+
+            while True:
+                body_node = self.SDLCExpression()
+                if body_node is None:
+                    # print('in bd', body_node)
+                    pass
+                else:
+                    if body_node is not None:
+                        t = self.MakeNode('SDLC_BODY', t, body_node)
+                self.Skips(['IDENTIFIER', 'STRING_LITERAL', self.sc['}']], False)
+                if self.currTok == self.sc['}']:
+                    break
+
+            self.Expects(self.currTok, self.sc['}'])
+
+            node_rep = self.MakeNode('SDLC_KW', None, t)
+            return node_rep
 
         elif self.currTok == 'IF_KW':
             if_node_rep = None
@@ -300,7 +384,7 @@ class Synter:
             else_node_rep = None
 
             self.Advance()
-            cond_leaf = self.ParenExpr()
+            cond_leaf = self.ParenExpr(self.Expression, parens=['(', ')'])
             self.Expects(self.currTok, self.sc['{'])
             self.Advance()
 
@@ -320,7 +404,7 @@ class Synter:
 
             while self.currTok == 'IF_ELSE_TOKEN':
                 self.Advance()
-                ifelse_cond_leaf = self.ParenExpr()
+                ifelse_cond_leaf = self.ParenExpr(self.Expression, parens=['(', ')'])
                 self.Expects(self.currTok, self.sc['{'])
                 self.Advance()
 
@@ -381,6 +465,9 @@ class Synter:
 
             elif len(ifelse_blocks) == 0 and else_node_rep is None:
                 node_rep = self.MakeNode('IF_KW', None, self.MakeNode('IF_BODY', if_cond_node, if_node_rep))
+
+        elif self.currTok == 'COMMENT':
+            self.Advance()
 
         elif self.currTok == 'NEWLINE':
             self.Advance()

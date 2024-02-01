@@ -202,7 +202,7 @@ class Lexer:
                     # If it is a non-lexeme (ex. Comments), flips non lexeme bool but won't be tokenized
                     if self.buffer[-2:] == self.stopFlagValue:
                         self.nonLexeme = not self.nonLexeme
-                        # self.tokenTable.append((self.lineNo, self.buffer, "COMMENT"))
+                        self.tokenTable.append((self.lineNo, self.buffer, "COMMENT"))
 
                     self.BufferClear()
 
