@@ -3,7 +3,7 @@ from LexicalAnalyser import tokens
 from SyntacticalAnalyser import expr_table as expt
 
 
-# TODO: LOOP
+# TODO: LAST TO DO. BUG AND CODE CLEANUP
 
 
 class Synter:
@@ -84,7 +84,6 @@ class Synter:
         # Makes a leaf node but not connected to anything yet
         return Synter.Node(nodeType, value=n)
 
-    # TODO: Add more robust method for error handling/unify Expects() and Error() in one method
     def Expects(self, msg, token, advance=True):
         if self.currTok == token:
             if advance:
@@ -331,7 +330,6 @@ class Synter:
         node_rep = None  # Building the Node Representation here
 
         if self.currTok == 'IDENTIFIER':
-            # TODO: incomplete declaration statement
             left_leaf = self.MakeLeaf(self.currTok, self.currTokVal)
             self.Advance()
             self.Expects("Assign", self.currTok)
