@@ -69,7 +69,7 @@ OPERATORS = {
     '^': "ARITHMETIC_EXPONENT",
     '=': "ASSIGN_OP",
     '>': "GREATER_THAN",
-    '<': "LESS THAN",
+    '<': "LESS_THAN",
     '!': "NOT_OP"
 }
 

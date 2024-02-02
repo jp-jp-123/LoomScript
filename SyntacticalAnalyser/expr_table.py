@@ -64,7 +64,7 @@ all_op = {
     "EQUAL_TO": [False, True, 4],  # 0
     "NOT_EQUAL_TO": [False, True, 4],  # 1
     "GREATER_THAN": [False, True, 4],  # 2
-    "LESS THAN": [False, True, 4],  # 3
+    "LESS_THAN": [False, True, 4],  # 3
     "GREATER_THAN_EQUAL": [False, True, 4],  # 4
     "LESS_THAN_EQUAL": [False, True, 4],  # 5
     "NOT_OP": [False, True, 3],
