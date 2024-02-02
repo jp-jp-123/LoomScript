@@ -26,7 +26,7 @@ class Synter:
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
         self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW', 'GET_KW']
-        self.validAtomLimits = ['EOF_TOKEN', 'RPAREN_SC']     # i removed INP_KW, seems unnecessary, if anything effs up, look here first
+        self.validAtomLimits = ['EOF_TOKEN', 'RPAREN_SC', 'COMMA_SC']     # i removed INP_KW, seems unnecessary, if anything effs up, look here first
 
     class Node:
         def __init__(self, nodeType, left=None, right=None, value=None):
@@ -85,9 +85,10 @@ class Synter:
         return Synter.Node(nodeType, value=n)
 
     # TODO: Add more robust method for error handling/unify Expects() and Error() in one method
-    def Expects(self, msg, token):
+    def Expects(self, msg, token, advance=True):
         if self.currTok == token:
-            self.Advance()
+            if advance:
+                self.Advance()
             return
         print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
@@ -118,8 +119,8 @@ class Synter:
 
         return
 
+    # Similar to ParenExpr() except, these handles multiple non-expression arguments or parameters
     def ArgsExpr(self, expected_expr=None):
-        # Similar to ParenExpr(), except this handles multiple arguments instead of expression
         args = None
         self.Expects(self.currTok, self.sc['('])
         while self.currTok in expected_expr:
@@ -132,6 +133,7 @@ class Synter:
                 self.Expects(self.currTok, self.sc[')'])
                 return args
 
+    # These can handle singular parameter syntax or expression
     def ParenExpr(self, func, parens: list, expected_expr=None):
         # Build the expression inside the parenthesis here
 
@@ -141,6 +143,7 @@ class Synter:
             # Since expects already advances the statements, we use beforeTok to return what we need
             self.savedExpectedTok = self.beforeTok
             self.savedExpectedVal = self.beforeTokVal
+
             node = self.MakeLeaf(self.beforeTokVal, self.savedExpectedTok)
         else:
             if func == self.Expression:
@@ -334,7 +337,6 @@ class Synter:
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
-            # print(self.currTok, node_rep)
             # self.ExitCond()
 
         elif self.currTok == 'OUT_KW':
@@ -385,7 +387,6 @@ class Synter:
             while True:
                 body_node = self.SDLCExpression()
                 if body_node is None:
-                    # print('in bd', body_node)
                     pass
                 else:
                     if body_node is not None:
@@ -398,6 +399,142 @@ class Synter:
 
             node_rep = self.MakeNode('SDLC_KW', None, t)
             return node_rep
+
+        elif self.currTok == 'LOOP_KW':
+            self.Advance()
+            arg1 = None
+            arg2 = None
+            if_arg1 = True
+            get_args = True
+
+            t = None
+
+            self.Expects(self.currTok, self.sc['('], advance=False)
+
+            while get_args:
+                looks = self.Lookahead(1)
+
+                if looks == 'IDENTIFIER':
+                    # Since we haven't advanced yet, we double the lookahead to see if it's just an identifier or an
+                    # actual expression
+                    looks = self.Lookahead(2)
+
+                    # Seeing the assign_op means an EXPRESSION is ahead
+                    if looks == 'ASSIGN_OP':
+                        self.Advance()
+                        if if_arg1:
+                            arg1 = self.Statement()
+                        else:
+                            arg2 = self.Statement()
+
+                    # Seeing an operator means an EXPRESSION is ahead
+                    elif looks in expt.all_op:
+                        self.Advance()
+                        if if_arg1:
+                            arg1 = self.Expression(0)
+                        else:
+                            arg2 = self.Expression(0)
+
+                    # Seeing unary postfix operator means an EXPRESSION is ahead
+                    elif looks in expt.unary_posf:
+                        self.Advance()
+                        if if_arg1:
+                            arg1 = self.Expression(0)
+                        else:
+                            arg2 = self.Expression(0)
+
+                        # Seeing the delimiter means the IDENTIFIER is alone
+                    elif looks == self.sc[',']:
+                        self.Advance()
+                        if if_arg1:
+                            arg1 = self.MakeLeaf('IDENTIFIER', n=self.currTokVal)
+                        else:
+                            arg2 = self.MakeLeaf('IDENTIFIER', n=self.currTokVal)
+
+                    # Seeing other than this results to an Error
+                    else:
+                        self.Advance()
+                        self.Error(looks, "EXPRESSION OR COMMA DELIMITER")
+
+                elif looks == 'NUM_LITERAL':
+                    # Since we haven't advanced yet, we double the lookahead to see if it's just an identifier or an
+                    # actual expression
+                    looks = self.Lookahead(2)
+
+                    # Seeing operators means EXPRESSION is ahead
+                    if looks in expt.all_op:
+                        self.Advance()
+                        if if_arg1:
+                            arg1 = self.Expression(0)
+                        else:
+                            arg2 = self.Expression(0)
+
+                    # Seeing unary postfix operator means an EXPRESSION is ahead
+                    elif looks in expt.unary_posf:
+                        self.Advance()
+                        if if_arg1:
+                            arg1 = self.Expression(0)
+                        else:
+                            arg2 = self.Expression(0)
+
+                    # Seeing the delimiter means the NUM_LITERAL is alone
+                    elif looks == self.sc[',']:
+                        self.Advance()
+                        if arg1:
+                            arg1 = self.MakeLeaf('NUM_LITERAL', n=self.currTokVal)
+                        else:
+                            arg2 = self.MakeLeaf('NUM_LITERAL', n=self.currTokVal)
+
+                    # Seeing other than this results to an Error
+                    else:
+                        self.Advance()
+                        self.Error(looks, "EXPRESSION OR COMMA DELIMITER")
+
+                # Seeing unary prefix operator means an EXPRESSION is ahead
+                elif looks in expt.unary_pref :
+                    self.Advance()
+                    if if_arg1:
+                        arg1 = self.Expression(0)
+                    else:
+                        arg2 = self.Expression(0)
+
+                elif if_arg1:
+                    # Since NULL is only accepted in 1st argument, it will be only checked if if_arg1 is True
+                    if looks == 'NULL_KW':
+                        self.Advance()
+                        arg1 = self.MakeLeaf('NULL_KW', n='NULL')
+                        self.Advance()
+
+                # Seeing other than this results to an Error
+                else:
+                    self.Advance()
+                    self.Error(looks, "EXPRESSION OR COMMA DELIMITER")
+
+                if if_arg1:
+                    # reaching here means end of arg_1, switch it to false and start writing to arg2
+                    self.Expects(self.currTok, self.sc[','], advance=False)
+                    if_arg1 = False
+                else:
+                    # reaching here means end of arg_2, switch get_args to false to end the loop
+                    get_args = False
+
+            cond_node = self.MakeNode('CONDITION', arg1, arg2)
+
+            self.Expects(self.currTok, self.sc[')'])
+            self.Expects(self.currTok, self.sc['{'])
+
+            # Recursively calls Statement() method
+            while self.currTok != self.sc['}']:
+                body_node = self.Statement()
+                if body_node is None:
+                    pass
+                else:
+                    if body_node is not None:
+                        t = self.MakeNode('LOOP_BODY', t, body_node)
+
+            self.Expects(self.currTok, self.sc['}'])
+
+            node_rep = self.MakeNode('LOOP_KW', cond_node, t)
 
         elif self.currTok == 'IF_KW':
             if_node_rep = None
@@ -496,20 +633,8 @@ class Synter:
             self.Advance()
 
         else:
-            # TODO: unexpected syntax error might exit here, test for every expression errors as you like and report
-            if self.currTok == 'RPAREN_SC':
-                # RPAREN_SC at the end exits here, this catches it for now
-                self.Expects(self.currTok, self.sc['('])
-            else:
-                if self.currTok == 'NEWLINE':
-                    print("is nl", self.currTok)
-                    self.Expects(self.currTok, 'NEWLINE')
-                elif self.currTok == 'EOF_TOKEN':
-                    print(" is eof")
-                    self.Expects(self.currTok, 'EOF_TOKEN')
-                else:
-                    print(f"Error in this token {self.beforeTok}, {self.currTok}")
-                    exit(1)
+            print(f"Error in this token {self.beforeTok}, {self.currTok}")
+            exit(1)
 
         return node_rep
 

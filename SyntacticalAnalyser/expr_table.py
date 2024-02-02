@@ -20,10 +20,10 @@ unary_pref = {
 
 # post-fix
 unary_posf = {
-    "POSF_UNARY_INCREMENT": [True, False, 1],
-    "POSF_UNARY_DECREMENT": [True, False, 1],
-    "POSF_UNARY_ADD": [True, False, 1],
-    "POSF_UNARY_SUBTRACT": [True, False, 1],
+    "UNARY_INCREMENT": [True, False, 1],
+    "UNARY_DECREMENT": [True, False, 1],
+    "UNARY_ADD": [True, False, 1],
+    "UNARY_SUBTRACT": [True, False, 1],
 }
 
 boolean = {
