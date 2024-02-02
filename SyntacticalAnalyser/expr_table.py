@@ -20,10 +20,10 @@ unary_pref = {
 
 # post-fix
 unary_posf = {
-    "UNARY_INCREMENT": [True, False, 1],
-    "UNARY_DECREMENT": [True, False, 1],
-    "UNARY_ADD": [True, False, 1],
-    "UNARY_SUBTRACT": [True, False, 1],
+    "POSF_UNARY_INCREMENT": [True, False, 1],
+    "POSF_UNARY_DECREMENT": [True, False, 1],
+    "POSF_UNARY_ADD": [True, False, 1],
+    "POSF_UNARY_SUBTRACT": [True, False, 1],
 }
 
 boolean = {
@@ -46,14 +46,14 @@ boolean = {
 }
 
 all_op = {
-    "UNARY_INCREMENT": [False, False, 9],
-    "UNARY_DECREMENT": [False, False, 9],
-    "UNARY_ADD": [False, False, 9],
-    "UNARY_SUBTRACT": [False, False, 9],
-    "POSF_UNARY_INCREMENT": [True, False, 8],
-    "POSF_UNARY_DECREMENT": [True, False, 8],
-    "POSF_UNARY_ADD": [True, False, 8],
-    "POSF_UNARY_SUBTRACT": [True, False, 8],
+    "POSF_UNARY_INCREMENT": [False, False, 9],
+    "POSF_UNARY_DECREMENT": [False, False, 9],
+    "POSF_UNARY_ADD": [False, False, 9],
+    "POSF_UNARY_SUBTRACT": [False, False, 9],
+    "PREF_UNARY_INCREMENT": [True, False, 8],
+    "PREF_UNARY_DECREMENT": [True, False, 8],
+    "PREF_UNARY_ADD": [True, False, 8],
+    "PREF_UNARY_SUBTRACT": [True, False, 8],
     "ARITHMETIC_EXPONENT": [True, True, 7],
     "ARITHMETIC_MULTIPLY": [False, True, 6],
     "ARITHMETIC_DIVIDE": [False, True, 6],

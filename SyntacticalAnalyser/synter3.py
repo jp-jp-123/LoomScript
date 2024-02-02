@@ -26,7 +26,7 @@ class Synter:
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
         self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW', 'GET_KW']
-        self.invalidAtomLimits = ['EOF_TOKEN', 'RPAREN_SC', 'INP_KW']
+        self.validAtomLimits = ['EOF_TOKEN', 'RPAREN_SC']     # i removed INP_KW, seems unnecessary, if anything effs up, look here first
 
     class Node:
         def __init__(self, nodeType, left=None, right=None, value=None):
@@ -171,14 +171,11 @@ class Synter:
             else:
                 self.Expects(self.currTok, self.sc[':'])
 
-
-
         while self.currTok not in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
             direction = self.currTok
             self.Advance()
 
             if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
-                # print('breaking', node_rep)
                 return node_rep
 
             self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='NUM_LITERAL')
@@ -191,18 +188,38 @@ class Synter:
             node = self.SDLCExpression()
 
             node_rep = self.MakeNode(head_leaf, node_rep, node)
-            # print('nodes', node_rep)
             return node_rep
 
-        # print('last node', node_rep)
+        return node_rep
+
+    def PostfixExpr(self, token, leaf):
+
+        # Switching the current token/unary into postfix unary
+        if token == 'ARITHMETIC_SUBTRACT':
+            self.currTok = 'POSF_UNARY_SUBTRACT'
+        elif token == 'UNARY_DECREMENT':
+            self.currTok = 'POSF_UNARY_DECREMENT'
+        elif token == 'UNARY_INCREMENT':
+            self.currTok = 'POSF_UNARY_INCREMENT'
+        else:
+            self.currTok = 'POSF_UNARY_ADD'
+
+        node_rep = self.MakeNode(self.currTok, leaf, n=self.currTokVal)
+        self.Advance()
+
         return node_rep
 
     def LookaheadAtom(self):
         node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
         self.Advance()
 
-        # Lookahead, Atoms expect these things. Further check is NEWLINE is the self.currTok
-        if self.currTok not in expt.all_op and self.currTok not in self.invalidAtomLimits:
+        # These block catches the unaries in the lookahead
+        # transforms it into postifx and returns the leaf immediately
+        if self.currTok in expt.unary_pref:
+            node_rep = self.PostfixExpr(self.currTok, node_rep)
+
+        # Lookahead, Atoms doesn't expect these things. Further check is NEWLINE is the self.currTok
+        if self.currTok not in expt.all_op and self.currTok not in self.validAtomLimits:
             if self.currTok == 'NEWLINE':
                 # returns the node representation if self.currTok avoided illegal lookahead tokens
                 return node_rep
@@ -243,16 +260,22 @@ class Synter:
         elif self.currTok == 'NEWLINE':
             self.Advance()
 
+        # Unary operators are undecided if postfix/prefix, prefix are decided here, and postfix is decided
+        # after checking the lookahead of other atoms
         elif self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:  # UNARIES
             # Switching all of them to unary except add
             if self.currTok == 'ARITHMETIC_SUBTRACT':
-                op = 'UNARY_SUBTRACT'
+                op = 'PREF_UNARY_SUBTRACT'
+                op_val = '-'
             elif self.currTok == 'UNARY_DECREMENT':
-                op = 'UNARY_DECREMENT'
+                op = 'PREF_UNARY_DECREMENT'
+                op_val = '--'
             elif self.currTok == 'UNARY_INCREMENT':
-                op = 'UNARY_INCREMENT'
+                op = 'PREF_UNARY_INCREMENT'
+                op_val = '++'
             else:
                 op = 'ARITHMETIC_ADD'
+                op_val = '+'
 
             self.Advance()
 
@@ -261,14 +284,14 @@ class Synter:
                 self.Error(op, self.validAtoms)
 
             # Call Expression() again with precedence same to UNARY_SUBTRACT. Any prefix unaries are fine
-            node = self.Expression(expt.all_op['UNARY_SUBTRACT'][2])
-            node_rep = self.MakeNode(op, None, node)
+            node = self.Expression(expt.all_op['PREF_UNARY_SUBTRACT'][2])
+            node_rep = self.MakeNode(op, None, node, n=op_val)
 
         else:
             # TODO: Add support for postfix unaries
             self.Error(self.currTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
 
-        # Try catch block for Key Error due to self.currTok to getting unintended tokens for the while loop
+        # Try catch block for Key Error due to self.currTok getting unintended tokens for the while loop
         try:
             #  Condition for expression. Check if it's a binary and precedence is >= to p
             while expt.all_op[self.currTok][1] and expt.all_op[self.currTok][2] >= p:
@@ -279,7 +302,7 @@ class Synter:
                 # Advance and check if the next token is as expected, error otherwise
                 self.Advance()
                 if self.currTok not in self.validAtoms:
-                    self.Error(self.beforeTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW'")
+                    self.Error(self.beforeTok, self.validAtoms)
 
                 # Get the precedence of op/saved token
                 op_prec = expt.all_op[op][2]
@@ -312,7 +335,8 @@ class Synter:
             self.Expects("Assign", self.currTok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
-            self.ExitCond()
+            # print(self.currTok, node_rep)
+            # self.ExitCond()
 
         elif self.currTok == 'OUT_KW':
             self.Advance()
