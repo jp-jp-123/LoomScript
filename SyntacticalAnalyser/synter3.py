@@ -288,7 +288,6 @@ class Synter:
             node_rep = self.MakeNode(op, None, node, n=op_val)
 
         else:
-            # TODO: Add support for postfix unaries
             self.Error(self.currTok, "'NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER'")
 
         # Try catch block for Key Error due to self.currTok getting unintended tokens for the while loop
@@ -497,7 +496,6 @@ class Synter:
             self.Advance()
 
         else:
-            # TODO: Postfix unaries exits here, add support for postfix unary
             # TODO: unexpected syntax error might exit here, test for every expression errors as you like and report
             if self.currTok == 'RPAREN_SC':
                 # RPAREN_SC at the end exits here, this catches it for now
