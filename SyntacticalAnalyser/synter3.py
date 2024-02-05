@@ -358,7 +358,6 @@ class Synter:
             self.Advance()
             right_leaf = self.ParenExpr(self.Expression, parens=['(', ')'])
             node_rep = self.MakeNode('OUT_KW', None, right_leaf)
-            self.ExitCond()
 
         elif self.currTok == 'SET_KW':
             self.Advance()
@@ -384,7 +383,7 @@ class Synter:
             head_node = self.MakeNode('SET_KW', None, cond_leaf)
             node_rep = self.MakeNode('BODY', head_node, node_rep)
 
-            self.ExitCond(custom=self.sc['}'])
+            self.Expects(self.currTok, self.sc['}'])
 
         elif self.currTok == 'FILEOP_KW':
             self.Advance()
@@ -653,17 +652,6 @@ class Synter:
 
         return node_rep
 
-    def ExitCond(self, custom=None):
-        if custom:
-            self.Expects(self.currTok, custom)  # for custom end of statements
-        if self.currTok == 'NEWLINE':
-            self.Expects(self.currTok, 'NEWLINE')
-        elif self.currTok == 'EOF_TOKEN':
-            self.Expects(self.currTok, 'EOF_TOKEN')
-        else:
-            print(f"Error in this token {self.currTok}")
-            exit(1)
-
     def Parse(self, path):
         # Generate the Symbol Table
         p = path
@@ -691,7 +679,7 @@ class Synter:
 
 
 if __name__ == '__main__':
-    path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test2.loom"
+    path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.loom"
     main = Synter()
     parser = main.Parse(path)
     print(parser)
