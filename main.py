@@ -75,7 +75,7 @@ class Main:
 
     def RunSynter(self):
         main_synter = synter3.Synter()
-        parser = main_synter.Parse()
+        parser = main_synter.Parse(self.src)
 
         if parser is not None:
             print("Parse Tree Successfully Generated")

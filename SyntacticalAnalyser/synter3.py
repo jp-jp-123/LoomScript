@@ -26,7 +26,7 @@ class Synter:
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
 
-        # Atoms = Terms 1 + 2 (Atoms: expected tokens after operators)
+        # Atoms = Terms (Atoms: expected tokens after operators)
         self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW', 'GET_KW']
         # validAtomLimits = what expected to see after atoms
         self.validAtomLimits = ['EOF_TOKEN', 'RPAREN_SC', 'COMMA_SC']     # i removed INP_KW, seems unnecessary, if anything effs up, look here first
@@ -82,12 +82,12 @@ class Synter:
         else:
             return self.symTable[-1][2]     # returns the last value of the symbol table i.e. EOF_TOKEN
 
+    # For making parent node
     def MakeNode(self, nodeType, left, right=None, n=None):
-        # For making parent node
         return Synter.Node(nodeType, left, right, value=n)
 
+    # Makes a leaf node but not connected to anything yet
     def MakeLeaf(self, nodeType, n):
-        # Makes a leaf node but not connected to anything yet
         return Synter.Node(nodeType, value=n)
 
     # Expects() takes one character only and checks if your current token matches to what you want to see (...)
@@ -226,10 +226,11 @@ class Synter:
         node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
         self.Advance()
 
-        # This block looks ahead and checks if the End of Statement
+        # This block looks ahead and checks  the End of Statement
+        # it basically restricts the postfixes to appear at the end of statement
         k = self.Lookahead(1)
         if k in ['NEWLINE', 'EOF_TOKEN']:
-            # Getting these operators before end of statement means their postfixes
+            # Getting these operators just before end of statement means their postfixes
             if self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:
                 # test for unary add and sub
                 node_rep = self.PostfixExpr(self.currTok, node_rep)
@@ -663,9 +664,9 @@ class Synter:
             print(f"Error in this token {self.currTok}")
             exit(1)
 
-    def Parse(self):
+    def Parse(self, path):
         # Generate the Symbol Table
-        path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test2.loom"
+        p = path
         self.Generate(path)
 
         # Start parsing by getting the first/index 0 token, call the statement() to see where to branch off
@@ -690,6 +691,7 @@ class Synter:
 
 
 if __name__ == '__main__':
+    path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test2.loom"
     main = Synter()
-    parser = main.Parse()
+    parser = main.Parse(path)
     print(parser)
