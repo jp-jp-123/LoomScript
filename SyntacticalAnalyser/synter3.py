@@ -8,24 +8,27 @@ from SyntacticalAnalyser import expr_table as expt
 
 class Synter:
     def __init__(self):
-        self.lexerOut = None
-        self.symTable = None
-        self.symTIndex = 0
-        self.farLook = 0
+        self.lexerOut = None    # Calls lexer
+        self.symTable = None    # Symbol table
+        self.symTIndex = 0      # Symbol Table Index
+        self.farLook = 0        # Custom table index, for Lookahead
 
-        self.beforeTok = None
-        self.currTok = None
-        self.currTokVal = None
-        self.currLine = None
-        self.savedExpectedTok = None
-        self.savedExpectedVal = None
+        self.beforeTok = None   # Before Token
+        self.currTok = None     # Current Token
+        self.currTokVal = None  # Current Token Value
+        self.currLine = None    # Current Line
+        self.savedExpectedTok = None    # Saves Expected Token
+        self.savedExpectedVal = None    # Saves Expected Value
 
         self.kw = tokens.KEYWORDS
         self.sc = tokens.SPECIAL_CHARACTERS
         self.op = tokens.OPERATORS
         self.unop = tokens.UNARY_OPS
         self.dblop = tokens.DOUBLE_OPERATORS
+
+        # Atoms = Terms 1 + 2 (Atoms: expected tokens after operators)
         self.validAtoms = ['NUM_LITERAL', 'STRING_LITERAL', 'IDENTIFIER', 'LPAREN_SC', 'INP_KW', 'GET_KW']
+        # validAtomLimits = what expected to see after atoms
         self.validAtomLimits = ['EOF_TOKEN', 'RPAREN_SC', 'COMMA_SC']     # i removed INP_KW, seems unnecessary, if anything effs up, look here first
 
     class Node:
@@ -35,6 +38,7 @@ class Synter:
             self.right = right
             self.value = value
 
+        # repr = representation
         def __repr__(self):
             if self.left is None and self.right is None:
                 return f'({self.value}: {self.nodeType})'
@@ -46,10 +50,10 @@ class Synter:
                 return f'({self.left}, {self.value}: {self.nodeType}, {self.right})'
 
     def Generate(self, fpath):
+        # Generates the symbol table
         self.lexerOut = lexer.Lexer()
         self.lexerOut.SourceToLexemes(fpath)
         self.symTable = self.lexerOut.tokenTable
-        # print(self.symTable)
 
     def GetToken(self):
         # Get the token of the current index
@@ -57,6 +61,8 @@ class Synter:
 
         self.beforeTok = self.symTable[-1 + i][2]
         self.beforeTokVal = self.symTable[-1 + i][1]
+
+        # [[line, lexeme, token], .....]
         self.currTok = self.symTable[i][2]
         self.currTokVal = self.symTable[i][1]
         self.currLine = self.symTable[i][0]
@@ -65,38 +71,43 @@ class Synter:
         # Advance to next token
         self.symTIndex += 1
 
-        # has far_look or not, still advances to the next token. The far look index is just not consumed
         if self.symTIndex < len(self.symTable):
             self.GetToken()
 
     def Lookahead(self, steps=0):
-        look_idx = self.symTIndex + steps
+        look_idx = self.symTIndex + steps   # index 6 + 2 = index 8
 
         if look_idx < len(self.symTable):
             return self.symTable[look_idx][2]
         else:
-            return self.symTable[-1][2]
+            return self.symTable[-1][2]     # returns the last value of the symbol table i.e. EOF_TOKEN
 
     def MakeNode(self, nodeType, left, right=None, n=None):
+        # For making parent node
         return Synter.Node(nodeType, left, right, value=n)
 
     def MakeLeaf(self, nodeType, n):
         # Makes a leaf node but not connected to anything yet
         return Synter.Node(nodeType, value=n)
 
+    # Expects() takes one character only and checks if your current token matches to what you want to see (...)
     def Expects(self, msg, token, advance=True):
         if self.currTok == token:
-            if advance:
+            if advance:     # if advance is false, Expects() will not get the next token. True by default
                 self.Advance()
             return
         print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
 
+    # Similar to Expects, except if you don't want to compare and sure you will get an error
     def Error(self, msg, token):
         print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
         exit(1)
 
+    # Skips newlines and eof token
     def Skips(self, items: list, equal_to=True):
+        # items: are list you expected to see or not to see
+        # equal_to: type of comparison you want
         if equal_to:
             while self.currTok == items:
                 self.Advance()
@@ -215,12 +226,18 @@ class Synter:
         node_rep = self.MakeLeaf(self.currTok, self.currTokVal)
         self.Advance()
 
-        # These block catches the unaries in the lookahead
-        # transforms it into postifx and returns the leaf immediately
-        if self.currTok in expt.unary_pref:
-            node_rep = self.PostfixExpr(self.currTok, node_rep)
+        # This block looks ahead and checks if the End of Statement
+        k = self.Lookahead(1)
+        if k in ['NEWLINE', 'EOF_TOKEN']:
+            # Getting these operators before end of statement means their postfixes
+            if self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:
+                # test for unary add and sub
+                node_rep = self.PostfixExpr(self.currTok, node_rep)
+                return node_rep
 
-        # Lookahead, Atoms doesn't expect these things. Further check is NEWLINE is the self.currTok
+        # Check if current token is an illegal character after atoms
+        # expt.all_op: list of all operators
+        # condition of operator is that next token must not be: an operator and validatomlimits
         if self.currTok not in expt.all_op and self.currTok not in self.validAtomLimits:
             if self.currTok == 'NEWLINE':
                 # returns the node representation if self.currTok avoided illegal lookahead tokens
@@ -234,7 +251,7 @@ class Synter:
     def Expression(self, precedence):
         # Building the Expression
 
-        node_rep = None  # Building the Node Representation here
+        node_rep = None  # Building the Node/Tree Representation here
         p = precedence
 
         # This if-else block checks for "Atoms"
@@ -276,7 +293,7 @@ class Synter:
                 op = 'PREF_UNARY_INCREMENT'
                 op_val = '++'
             else:
-                op = 'ARITHMETIC_ADD'
+                op = 'PREF_UNARY_ADD'
                 op_val = '+'
 
             self.Advance()
@@ -330,12 +347,11 @@ class Synter:
         node_rep = None  # Building the Node Representation here
 
         if self.currTok == 'IDENTIFIER':
-            left_leaf = self.MakeLeaf(self.currTok, self.currTokVal)
+            left_leaf = self.MakeLeaf(self.currTok, self.currTokVal)    # (identifier_name: IDENTIFIER)
             self.Advance()
-            self.Expects("Assign", self.currTok)
+            self.Expects(self.currTok, 'ASSIGN_OP')     # Expects(msg, expected_tok)
             right_leaf = self.Expression(0)
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
-            # self.ExitCond()
 
         elif self.currTok == 'OUT_KW':
             self.Advance()
@@ -638,7 +654,7 @@ class Synter:
 
     def ExitCond(self, custom=None):
         if custom:
-            self.Expects(self.currTok, custom)
+            self.Expects(self.currTok, custom)  # for custom end of statements
         if self.currTok == 'NEWLINE':
             self.Expects(self.currTok, 'NEWLINE')
         elif self.currTok == 'EOF_TOKEN':
@@ -649,7 +665,7 @@ class Synter:
 
     def Parse(self):
         # Generate the Symbol Table
-        path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.loom"
+        path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test2.loom"
         self.Generate(path)
 
         # Start parsing by getting the first/index 0 token, call the statement() to see where to branch off
@@ -661,9 +677,10 @@ class Synter:
             # Filters the result of the node
             if node_result is None:
                 # if it is none, ignores it, avoids creating nodes that doesn't contain anything
+                # Comments and Newlines returns None
                 pass
             else:
-                # if it contains anything, create a node
+                # if it contains anything, create a node (parent node, left, right)
                 if node_result is not None:
                     tree = self.MakeNode('SEQUENCE', tree, node_result)
             if self.currTok == "EOF_TOKEN":

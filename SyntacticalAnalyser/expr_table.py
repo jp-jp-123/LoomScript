@@ -1,4 +1,4 @@
-# token: right_assoc, is_binary, precedence
+# token: [right_assoc, is_binary, precedence]
 # higher precedence = higher number
 math = {
     "ARITHMETIC_EXPONENT": [True, True, 3],
