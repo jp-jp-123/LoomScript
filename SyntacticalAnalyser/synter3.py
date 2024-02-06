@@ -194,9 +194,6 @@ class Synter:
             else:
                 self.Error(self.currTok, "'TOUP_KW', 'TODOWN_KW', 'TORIGHT_KW', 'TOLEFT_KW'")
 
-            # if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
-                # self.Error(self.currTok, self.sc['('])
-
             self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='NUM_LITERAL')
 
             # If we get to this statement it means we got the expected expression inside the (), use saveExpected to
