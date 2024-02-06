@@ -166,7 +166,6 @@ class Synter:
         return node
 
     def SDLCExpression(self):
-        # still broken
         node_rep = None
 
         if self.currTok == 'NEWLINE':
@@ -185,8 +184,12 @@ class Synter:
                 self.Expects(self.currTok, self.sc[':'])
 
         while self.currTok not in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
-            direction = self.currTok
-            self.Advance()
+            direction = None
+            if self.currTok in ['TOUP_KW', 'TODOWN_KW', 'TORIGHT_KW', 'TOLEFT_KW']:
+                direction = self.currTok
+                self.Advance()
+            else:
+                self.Error(self.currTok, "'TOUP_KW', 'TODOWN_KW', 'TORIGHT_KW', 'TOLEFT_KW'")
 
             if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
                 return node_rep
@@ -348,7 +351,7 @@ class Synter:
         node_rep = None  # Building the Node Representation here
 
         if self.currTok == 'IDENTIFIER':
-            left_leaf = self.MakeLeaf(self.currTok, self.currTokVal)    # (identifier_name: IDENTIFIER)
+            left_leaf = self.MakeLeaf(self.currTok, self.currTokVal)    # Ex: (identifier_name: IDENTIFIER)
             self.Advance()
             self.Expects(self.currTok, 'ASSIGN_OP')     # Expects(msg, expected_tok)
             right_leaf = self.Expression(0)
@@ -647,14 +650,13 @@ class Synter:
             self.Advance()
 
         else:
-            print(f"Error in this token {self.beforeTok}, {self.currTok}")
+            print(f"Error in this token {self.beforeTok}, {self.currTok}, Line: {self.currLine}")
             exit(1)
 
         return node_rep
 
     def Parse(self, path):
         # Generate the Symbol Table
-        p = path
         self.Generate(path)
 
         # Start parsing by getting the first/index 0 token, call the statement() to see where to branch off
@@ -679,7 +681,7 @@ class Synter:
 
 
 if __name__ == '__main__':
-    path = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test3.loom"
+    fpath = "C:\\Users\\Lenovo\\Documents\\GitHub\\LoomScript\\TestCase\\test2.loom"
     main = Synter()
-    parser = main.Parse(path)
+    parser = main.Parse(fpath)
     print(parser)
