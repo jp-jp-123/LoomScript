@@ -183,6 +183,9 @@ class Synter:
             else:
                 self.Expects(self.currTok, self.sc[':'])
 
+        else:
+            self.Error(self.currTok, "'IDENTIFIER', 'STRING_LITERAL'")
+
         while self.currTok not in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
             direction = None
             if self.currTok in ['TOUP_KW', 'TODOWN_KW', 'TORIGHT_KW', 'TOLEFT_KW']:
@@ -191,8 +194,8 @@ class Synter:
             else:
                 self.Error(self.currTok, "'TOUP_KW', 'TODOWN_KW', 'TORIGHT_KW', 'TOLEFT_KW'")
 
-            if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
-                self.Error(self.currTok, self.sc['('])
+            # if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
+                # self.Error(self.currTok, self.sc['('])
 
             self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='NUM_LITERAL')
 
