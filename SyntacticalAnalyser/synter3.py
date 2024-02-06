@@ -201,6 +201,10 @@ class Synter:
             head_leaf = self.MakeNode(direction, self.MakeLeaf(self.savedExpectedTok, self.savedExpectedVal), None)
             self.Expects(self.currTok, self.sc[':'])
 
+            # Checks if after the colon is an atom, if not, raise error
+            if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
+                self.Error(self.currTok, "'IDENTIFIER', 'STRING_LITERAL'")
+
             node = self.SDLCExpression()
 
             node_rep = self.MakeNode(head_leaf, node_rep, node)
