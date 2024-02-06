@@ -1,6 +1,7 @@
 from LexicalAnalyser import lexer
 from LexicalAnalyser import tokens
 from SyntacticalAnalyser import expr_table as expt
+import sys
 
 
 # TODO: LAST TO DO. BUG AND CODE CLEANUP
@@ -96,13 +97,13 @@ class Synter:
             if advance:     # if advance is false, Expects() will not get the next token. True by default
                 self.Advance()
             return
-        print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
-        exit(1)
+        sys.tracebacklimit = 0
+        raise SyntaxError(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
 
     # Similar to Expects, except if you don't want to compare and sure you will get an error
     def Error(self, msg, token):
-        print(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
-        exit(1)
+        sys.tracebacklimit = 0
+        raise SyntaxError(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
 
     # Skips newlines and eof token
     def Skips(self, items: list, equal_to=True):
