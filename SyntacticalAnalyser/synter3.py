@@ -201,7 +201,7 @@ class Synter:
             head_leaf = self.MakeNode(direction, self.MakeLeaf(self.savedExpectedTok, self.savedExpectedVal), None)
             self.Expects(self.currTok, self.sc[':'])
 
-            # Checks if after the colon is an atom, if not, raise error
+            # Checks if after the colon is an end of statement, if it is raise an error
             if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
                 self.Error(self.currTok, "'IDENTIFIER', 'STRING_LITERAL'")
 
@@ -237,9 +237,8 @@ class Synter:
         # it basically restricts the postfixes to appear at the end of statement
         k = self.Lookahead(1)
         if k in ['NEWLINE', 'EOF_TOKEN']:
-            # Getting these operators just before end of statement means their postfixes
+            # Getting these operators just before end of statement means they are postfixes
             if self.currTok in ['ARITHMETIC_ADD', 'ARITHMETIC_SUBTRACT', 'UNARY_INCREMENT', 'UNARY_DECREMENT']:
-                # test for unary add and sub
                 node_rep = self.PostfixExpr(self.currTok, node_rep)
                 return node_rep
 
@@ -654,8 +653,9 @@ class Synter:
             self.Advance()
 
         else:
-            print(f"Error in this token {self.beforeTok}, {self.currTok}, Line: {self.currLine}")
-            exit(1)
+            self.Error('Illegal Expression or Statement start', 'STATEMENT SEQUENCE')
+            # print(f"Illegal Expression or Statement start: {self.beforeTok}, {self.currTok}, Line: {self.currLine}")
+            # exit(1)
 
         return node_rep
 
