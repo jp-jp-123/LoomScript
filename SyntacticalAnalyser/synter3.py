@@ -352,6 +352,7 @@ class Synter:
         # Building the Statement
         # Basically every if is a syntax of the statement
         # Good luck sa magrereport neto hahahahahahah
+        # (Arguments/Conditions(parent Keyword)body)
 
         node_rep = None  # Building the Node Representation here
 
@@ -363,11 +364,14 @@ class Synter:
             node_rep = self.MakeNode('ASSIGN_OP', left_leaf, right_leaf)
 
         elif self.currTok == 'OUT_KW':
+            # OUTPUT (a + b + c)
             self.Advance()
             right_leaf = self.ParenExpr(self.Expression, parens=['(', ')'])
             node_rep = self.MakeNode('OUT_KW', None, right_leaf)
 
         elif self.currTok == 'SET_KW':
+            # SET(ppp){
+            # ....}
             self.Advance()
             expect = self.Lookahead(1)
             cond_leaf = None
@@ -472,6 +476,7 @@ class Synter:
                             arg1 = self.MakeLeaf('IDENTIFIER', n=self.currTokVal)
                         else:
                             arg2 = self.MakeLeaf('IDENTIFIER', n=self.currTokVal)
+                        self.Advance()
 
                     # Seeing other than this results to an Error
                     else:

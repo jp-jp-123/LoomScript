@@ -32,7 +32,7 @@ class Main:
             # Open the file in write mode
             with open(self.dest, 'w') as file:
                 # Write each item in the list to a new line
-                file.write("Line No.".ljust(20) + "Lexeme".ljust(40) + "Token\n")
+                file.write("Line No.".ljust(20) + "Lexeme".ljust(100) + "Token\n")
 
                 file.write('=' * 150)
 
