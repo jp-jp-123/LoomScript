@@ -98,12 +98,12 @@ class Synter:
                 self.Advance()
             return
         sys.tracebacklimit = 0
-        raise SyntaxError(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
+        raise SyntaxError(f"Token {msg}: Expecting '{token}', found '{self.currTokVal}', in line: {self.currLine}")
 
     # Similar to Expects, except if you don't want to compare and sure you will get an error
     def Error(self, msg, token):
         sys.tracebacklimit = 0
-        raise SyntaxError(f"{msg}: Expecting '{token}', found '{self.currTok}', in line: {self.currLine}")
+        raise SyntaxError(f"Token {msg}: Expecting '{token}', found '{self.currTokVal}', in line: {self.currLine}")
 
     # Skips newlines and eof token
     def Skips(self, items: list, equal_to=True):
@@ -351,6 +351,7 @@ class Synter:
     def Statement(self):
         # Building the Statement
         # Basically every if is a syntax of the statement
+        # Good luck sa magrereport neto hahahahahahah
 
         node_rep = None  # Building the Node Representation here
 
