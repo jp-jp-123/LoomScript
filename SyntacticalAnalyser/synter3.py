@@ -192,7 +192,7 @@ class Synter:
                 self.Error(self.currTok, "'TOUP_KW', 'TODOWN_KW', 'TORIGHT_KW', 'TOLEFT_KW'")
 
             if self.currTok in [self.sc['}'], 'EOF_TOKEN', 'NEWLINE']:
-                return node_rep
+                self.Error(self.currTok, self.sc['('])
 
             self.ParenExpr(self.Expression, parens=['(', ')'], expected_expr='NUM_LITERAL')
 
