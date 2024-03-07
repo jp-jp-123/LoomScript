@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="Added lookahead for atoms. Fixed syntax error conditions">
+    <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="- added advance() for isolated identifier argument in LOOP_KW">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SymbolTable.txt" beforeDir="false" afterPath="$PROJECT_DIR$/SymbolTable.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestCase/test.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test.loom" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestCase/test2.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test2.loom" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestCase/test3.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test3.loom" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,104 +68,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1700474805803</updated>
-    </task>
-    <task id="LOCAL-00001" summary="Lexical Analyser for LoomScript">
-      <created>1700478787421</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1700478787421</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Lexical Analyser for LoomScript">
-      <created>1700491062448</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1700491062448</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Lexical Analyser for LoomScript">
-      <created>1700492834470</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1700492834471</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Lexical Analyser for LoomScript">
-      <created>1700493577711</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1700493577711</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Lexical Analyser for LoomScript">
-      <created>1700493773466</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1700493773466</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Lexical Analyser for LoomScript">
-      <created>1700494422534</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1700494422534</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Lexical Analyser for LoomScript">
-      <created>1700528878690</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1700528878690</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Improving the lexer">
-      <created>1700570595761</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1700570595761</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Improving the lexer">
-      <created>1700570635459</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1700570635459</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Improving the lexer">
-      <created>1700571209482</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1700571209482</updated>
-    </task>
-    <task id="LOCAL-00011" summary="lexer by char">
-      <created>1700634349411</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1700634349411</updated>
-    </task>
-    <task id="LOCAL-00012" summary="added string_literal tokenizer for lexer.py">
-      <created>1700704176648</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1700704176648</updated>
-    </task>
-    <task id="LOCAL-00013" summary="added string_literal tokenizer for lexer.py">
-      <created>1700704584154</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1700704584154</updated>
-    </task>
-    <task id="LOCAL-00014" summary="added comments parser">
-      <created>1700720154139</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1700720154139</updated>
     </task>
     <task id="LOCAL-00015" summary="added decimal parser">
       <created>1700740672492</created>
@@ -267,7 +174,245 @@
       <option name="project" value="LOCAL" />
       <updated>1706355413861</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Added lookahead for atoms. Fixed syntax error conditions. Added support for logical ops">
+      <created>1706355795591</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1706355795591</updated>
+    </task>
+    <task id="LOCAL-00031" summary="fixed mislabeled line no. at the last lexeme of the line">
+      <created>1706362270370</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1706362270370</updated>
+    </task>
+    <task id="LOCAL-00032" summary="fixed mislabeled line no. at the last lexeme of the line">
+      <created>1706363624897</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1706363624897</updated>
+    </task>
+    <task id="LOCAL-00033" summary="fixed detection for expression syntax error logic and identification of new lines">
+      <created>1706363724219</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1706363724219</updated>
+    </task>
+    <task id="LOCAL-00034" summary="added INPUT as part of expression atoms">
+      <created>1706367240021</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1706367240021</updated>
+    </task>
+    <task id="LOCAL-00035" summary="fixed NEWLINE not tokenizing when buffer is empty">
+      <created>1706369208479</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1706369208479</updated>
+    </task>
+    <task id="LOCAL-00036" summary="fixed NEWLINE not tokenizing when buffer is empty">
+      <created>1706369226375</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1706369226375</updated>
+    </task>
+    <task id="LOCAL-00037" summary="fixed NEWLINE not tokenizing when buffer is empty">
+      <created>1706369296363</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1706369296363</updated>
+    </task>
+    <task id="LOCAL-00038" summary="added the symbol for tokens in parsed output">
+      <created>1706369768467</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1706369768467</updated>
+    </task>
+    <task id="LOCAL-00039" summary="- fixed extra NEWLINES bug (error when there are empty lines)&#10;- Added custom lookahead for Advance() method&#10;- Created ExitCond() method to avoid redundant check of delims&#10;- Added custom delimit for ExitCond() method&#10;- Added support for SET_KW&#10;- boilerplate for Code Block tree building">
+      <created>1706459224541</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1706459224541</updated>
+    </task>
+    <task id="LOCAL-00040" summary="- fixed extra NEWLINES bug (error when there are empty lines)&#10;- Added custom lookahead for Advance() method&#10;- Created ExitCond() method to avoid redundant check of delims&#10;- Added custom delimit for ExitCond() method&#10;- Added support for SET_KW&#10;- boilerplate for Code Block tree building">
+      <created>1706459248644</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1706459248644</updated>
+    </task>
+    <task id="LOCAL-00041" summary="added Node filtering to avoid creating empty Nodes for every empty newlines">
+      <created>1706545330751</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1706545330751</updated>
+    </task>
+    <task id="LOCAL-00042" summary="- added Node filtering to avoid creating empty Nodes for every empty newlines&#10;- fixed the header node for SET_KW">
+      <created>1706545627247</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1706545627247</updated>
+    </task>
+    <task id="LOCAL-00043" summary="- modified lexer to unify and tokenize IF_ELSE&#10;- added IF, IF_ELSE, ELSE statement support (w/o syntax error detection for now)">
+      <created>1706630215781</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1706630215781</updated>
+    </task>
+    <task id="LOCAL-00044" summary="- Added support for GET_KW in Expressions(). Kinda spaghetti but working&#10;- Added an ArgsExpr() method for building multiple arguments&#10;- A bit of cleanup in logic for checking Atom Limits in LookaheadAtom()">
+      <created>1706671320108</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1706671320108</updated>
+    </task>
+    <task id="LOCAL-00045" summary="- Added supprt for FILEOP_KW, TODO_KW, SDLC_KW, and the Unique SDLC_KW expressions in SDLWExpression() method">
+      <created>1706756568377</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1706756568377</updated>
+    </task>
+    <task id="LOCAL-00046" summary="- POSTFIX Unary ops are working (Yay!)&#10;- small changes to expr_table.py to clarify precedence of postfix and prefix">
+      <created>1706883438081</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1706883438081</updated>
+    </task>
+    <task id="LOCAL-00047" summary="- POSTFIX Unary ops are working (Yay!)&#10;- small changes to expr_table.py to clarify precedence of postfix and prefix">
+      <created>1706883462242</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1706883462242</updated>
+    </task>
+    <task id="LOCAL-00048" summary="- fixed LESS THAN token to LESS_THAN">
+      <created>1706887063978</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1706887063978</updated>
+    </task>
+    <task id="LOCAL-00049" summary="- added support for LOOP_kW">
+      <created>1706891867802</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1706891867802</updated>
+    </task>
+    <task id="LOCAL-00050" summary="- added TODO">
+      <created>1706891938968</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1706891938968</updated>
+    </task>
+    <task id="LOCAL-00051" summary="- added comments to synter3.py&#10;- fixed immature postfix operator transformation bug&#10;- added the synter3.py as part of main.py">
+      <created>1707144197644</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1707144197644</updated>
+    </task>
+    <task id="LOCAL-00052" summary="- added capability to choose what file you want easily">
+      <created>1707145643864</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1707145643864</updated>
+    </task>
+    <task id="LOCAL-00053" summary="- removed ExitCond() as it is useless">
+      <created>1707146782810</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1707146782810</updated>
+    </task>
+    <task id="LOCAL-00054" summary="- Added filtering correct keywords for SDLCExpression()">
+      <created>1707182651102</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1707182651102</updated>
+    </task>
+    <task id="LOCAL-00055" summary="- Fixed not raising error if special keywords for SDLC didn't see an opening parenthesis">
+      <created>1707182886372</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1707182886372</updated>
+    </task>
+    <task id="LOCAL-00056" summary="- Removed checking of End of Statement checks in SDLCExpression, deemed unnecessary">
+      <created>1707183241184</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1707183241184</updated>
+    </task>
+    <task id="LOCAL-00057" summary="- Removed checking of End of Statement checks in SDLCExpression, deemed unnecessary">
+      <created>1707183254753</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1707183254753</updated>
+    </task>
+    <task id="LOCAL-00058" summary="- added catching for illegal atom start (better readability)&#10;- added catching error for End of Statement after colon">
+      <created>1707183772863</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1707183772863</updated>
+    </task>
+    <task id="LOCAL-00059" summary="- fixed ELSE logic lexer.py for index error">
+      <created>1707184673705</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1707184673705</updated>
+    </task>
+    <task id="LOCAL-00060" summary="- better readability error for illegal sequence starts">
+      <created>1707184710442</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1707184710442</updated>
+    </task>
+    <task id="LOCAL-00061" summary="- better error raising method">
+      <created>1707185075337</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1707185075337</updated>
+    </task>
+    <task id="LOCAL-00062" summary="- better error raising method">
+      <created>1707187051177</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1707187051177</updated>
+    </task>
+    <task id="LOCAL-00063" summary="- added advance() for isolated identifier argument in LOOP_KW">
+      <created>1707195220261</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1707195220261</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -297,25 +442,32 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Lexical Analyser for LoomScript" />
-    <MESSAGE value="Improving the lexer" />
-    <MESSAGE value="lexer by char" />
-    <MESSAGE value="added string_literal tokenizer for lexer.py" />
-    <MESSAGE value="added comments parser" />
-    <MESSAGE value="added decimal parser" />
-    <MESSAGE value="fixed decimal parse bug&#10;(not tokenizing when the last character is EOL)" />
-    <MESSAGE value="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)" />
-    <MESSAGE value="fixed decimal bug (not tokenizing at EOL)&#10;fixed multiline bug (tokenizing instead of disposing buffer)&#10;added lexer error handling" />
-    <MESSAGE value="fixed decimal bug (unfinished right hand decimal)&#10;added error handling for unclosed string" />
-    <MESSAGE value="separate directory for test cases" />
-    <MESSAGE value="renaming and deleted old lexer file" />
-    <MESSAGE value="added symbol table txt file. Added file extension checking" />
-    <MESSAGE value="added line no tracking to lex output&#10;added syntactical analyser scratch" />
-    <MESSAGE value="fix buffer content untokenized on line:139" />
-    <MESSAGE value="fixed lexer bugs. Additional syntax error support for synter3.py" />
-    <MESSAGE value="Added lookahead for atoms" />
-    <MESSAGE value="Added lookahead for atoms. Fixed syntax error conditions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added lookahead for atoms. Fixed syntax error conditions" />
+    <MESSAGE value="fixed detection for expression syntax error logic and identification of new lines" />
+    <MESSAGE value="added INPUT as part of expression atoms" />
+    <MESSAGE value="fixed NEWLINE not tokenizing when buffer is empty" />
+    <MESSAGE value="added the symbol for tokens in parsed output" />
+    <MESSAGE value="- fixed extra NEWLINES bug (error when there are empty lines)&#10;- Added custom lookahead for Advance() method&#10;- Created ExitCond() method to avoid redundant check of delims&#10;- Added custom delimit for ExitCond() method&#10;- Added support for SET_KW&#10;- boilerplate for Code Block tree building" />
+    <MESSAGE value="added Node filtering to avoid creating empty Nodes for every empty newlines" />
+    <MESSAGE value="- added Node filtering to avoid creating empty Nodes for every empty newlines&#10;- fixed the header node for SET_KW" />
+    <MESSAGE value="- modified lexer to unify and tokenize IF_ELSE&#10;- added IF, IF_ELSE, ELSE statement support (w/o syntax error detection for now)" />
+    <MESSAGE value="- Added support for GET_KW in Expressions(). Kinda spaghetti but working&#10;- Added an ArgsExpr() method for building multiple arguments&#10;- A bit of cleanup in logic for checking Atom Limits in LookaheadAtom()" />
+    <MESSAGE value="- Added supprt for FILEOP_KW, TODO_KW, SDLC_KW, and the Unique SDLC_KW expressions in SDLWExpression() method" />
+    <MESSAGE value="- POSTFIX Unary ops are working (Yay!)&#10;- small changes to expr_table.py to clarify precedence of postfix and prefix" />
+    <MESSAGE value="- fixed LESS THAN token to LESS_THAN" />
+    <MESSAGE value="- added support for LOOP_kW" />
+    <MESSAGE value="- added TODO" />
+    <MESSAGE value="- added comments to synter3.py&#10;- fixed immature postfix operator transformation bug&#10;- added the synter3.py as part of main.py" />
+    <MESSAGE value="- added capability to choose what file you want easily" />
+    <MESSAGE value="- removed ExitCond() as it is useless" />
+    <MESSAGE value="- Added filtering correct keywords for SDLCExpression()" />
+    <MESSAGE value="- Fixed not raising error if special keywords for SDLC didn't see an opening parenthesis" />
+    <MESSAGE value="- Removed checking of End of Statement checks in SDLCExpression, deemed unnecessary" />
+    <MESSAGE value="- added catching for illegal atom start (better readability)&#10;- added catching error for End of Statement after colon" />
+    <MESSAGE value="- fixed ELSE logic lexer.py for index error" />
+    <MESSAGE value="- better readability error for illegal sequence starts" />
+    <MESSAGE value="- better error raising method" />
+    <MESSAGE value="- added advance() for isolated identifier argument in LOOP_KW" />
+    <option name="LAST_COMMIT_MESSAGE" value="- added advance() for isolated identifier argument in LOOP_KW" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -326,14 +478,14 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/SyntacticalAnalyser/synter3.py</url>
-          <line>202</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py</url>
           <line>149</line>
           <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/SyntacticalAnalyser/synter3.py</url>
+          <line>676</line>
+          <option name="timeStamp" value="21" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

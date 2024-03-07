@@ -1,9 +1,39 @@
-//test for illegal int identifiers//
+//WORKING STATEMENTS//
 
-S25 = 2
-1l$p = "k"
+a = b ++ 2 + 4
 
-// test for unclosed decimal at EOL //
+OUTPUT("we made")
 
-t = 2.
+SET(ppp){
 
+b = "a choice"
+
+}
+
+FILEOPERATE("go fight", "against your fate!")
+
+TODO("pain will come", "with the blade")
+
+SDLC{
+
+"pain":TOUP(1):"will wake up"
+"the despondent crowd":TOUP(1):"in this dormant"
+"world":TOUP(1):"somehow"
+
+}
+
+LOOP(unsheath, the_Sword < not_to_kll){
+Unsheathe_a_sword = "to rend those clouds"
+}
+
+IF(above_the_ground){
+Wake_up = "its time to gather now"
+}
+
+IF ELSE(above_the_ground){
+Wake_up = "its time to gather now"
+}
+
+ELSE{
+Wake_up = "its time to gather now"
+}

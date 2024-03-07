@@ -1,1 +1,37 @@
-a = 5 <= 4 ! 5
+path = "C:\Users\User\Pictures\Folder1"
+
+//SET tells what filepath they are working on//
+SET(path){
+    //first GET argument asks for what to get from the file(s)//
+    //gets all the jpg files within the working filepath, returns a list of all the matching files//
+    all_jpg = GET("filetype", "jpg")
+
+    //No initialization, jpg would be assigned members of all_jpg, similar to Python's "in"//
+    LOOP(NULL, ++b < all_jpg ){
+        //Outputs the filepath of the jpg_var//
+        OUTPUT(jpg_var)
+
+        //SET tells what filepath they are working on//
+        SET(jpg_var){
+            //first GET argument asks for what to get from the file(s)//
+            //gets metadata, and what metadata, the rest are just priority if the second argument is not available//
+            meta_data = GET("metadata", "Date Taken", "Date Created")
+
+            //FILEOPERATE executes a renaming operation using the metadata from the meta_data variable//
+            FILEOPERATE("rename", meta_data)
+        }
+    }
+}
+
+num = 2
+
+IF (num == 0) {
+
+
+	OUTPUT(num + "is even")
+
+
+}
+	ELSE {
+		OUTPUT(num + " is odd")
+	}

@@ -251,7 +251,7 @@ class Synter:
                 # returns the node representation if self.currTok avoided illegal lookahead tokens
                 return node_rep
             else:
-                self.Error(self.currTok, "OPERATORS")
+                self.Error(self.currTok, "BINARY OPERATORS")
 
         # returns the node representation if self.currTok avoided illegal lookahead tokens
         return node_rep
@@ -511,6 +511,7 @@ class Synter:
                             arg1 = self.MakeLeaf('NUM_LITERAL', n=self.currTokVal)
                         else:
                             arg2 = self.MakeLeaf('NUM_LITERAL', n=self.currTokVal)
+                        self.Advance()
 
                     # Seeing other than this results to an Error
                     else:
@@ -518,7 +519,7 @@ class Synter:
                         self.Error(looks, "EXPRESSION OR COMMA DELIMITER")
 
                 # Seeing unary prefix operator means an EXPRESSION is ahead
-                elif looks in expt.unary_pref :
+                elif looks in expt.unary_pref:
                     self.Advance()
                     if if_arg1:
                         arg1 = self.Expression(0)
@@ -660,7 +661,7 @@ class Synter:
             self.Advance()
 
         else:
-            self.Error('Illegal Expression or Statement start', 'STATEMENT SEQUENCE')
+            self.Error(self.currTok, 'STATEMENT SEQUENCE')
             # print(f"Illegal Expression or Statement start: {self.beforeTok}, {self.currTok}, Line: {self.currLine}")
             # exit(1)
 

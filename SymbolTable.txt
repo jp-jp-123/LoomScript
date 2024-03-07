@@ -1,6 +1,130 @@
-Line No.            Lexeme                                  Token
-======================================================================
-3                   tst_str                                 IDENTIFIER
-3                   =                                       ASSIGN_OP
-4                   "test string
-path1 = 2.5                ERROR_TOKEN
+Line No.            Lexeme                                                                                              Token
+======================================================================================================================================================
+1                    path                                                                                                 IDENTIFIER
+1                    =                                                                                                    ASSIGN_OP 
+1                    "C:\Users\User\Pictures\Folder1"                                                                     STRING_LITERAL
+1                                                                                                                         NEWLINE   
+2                                                                                                                         NEWLINE   
+3                    //SET tells what filepath they are working on//                                                      COMMENT   
+3                                                                                                                         NEWLINE   
+4                    SET                                                                                                  SET_KW    
+4                    (                                                                                                    LPAREN_SC 
+4                    path                                                                                                 IDENTIFIER
+4                    )                                                                                                    RPAREN_SC 
+4                    {                                                                                                    LCBRACK_SC
+4                                                                                                                         NEWLINE   
+5                    //first GET argument asks for what to get from the file(s)//                                         COMMENT   
+5                                                                                                                         NEWLINE   
+6                    //gets all the jpg files within the working filepath, returns a list of all the matching files//     COMMENT   
+6                                                                                                                         NEWLINE   
+7                    all_jpg                                                                                              IDENTIFIER
+7                    =                                                                                                    ASSIGN_OP 
+7                    GET                                                                                                  GET_KW    
+7                    (                                                                                                    LPAREN_SC 
+7                    "filetype"                                                                                           STRING_LITERAL
+7                    ,                                                                                                    COMMA_SC  
+7                    "jpg"                                                                                                STRING_LITERAL
+7                    )                                                                                                    RPAREN_SC 
+7                                                                                                                         NEWLINE   
+8                                                                                                                         NEWLINE   
+9                    //No initialization, jpg would be assigned members of all_jpg, similar to Python's "in"//            COMMENT   
+9                                                                                                                         NEWLINE   
+10                   LOOP                                                                                                 LOOP_KW   
+10                   (                                                                                                    LPAREN_SC 
+10                   NULL                                                                                                 NULL_KW   
+10                   ,                                                                                                    COMMA_SC  
+10                   ++                                                                                                   UNARY_INCREMENT
+10                   b                                                                                                    IDENTIFIER
+10                   <                                                                                                    LESS_THAN 
+10                   all_jpg                                                                                              IDENTIFIER
+10                   )                                                                                                    RPAREN_SC 
+10                   {                                                                                                    LCBRACK_SC
+10                                                                                                                        NEWLINE   
+11                   //Outputs the filepath of the jpg_var//                                                              COMMENT   
+11                                                                                                                        NEWLINE   
+12                   OUTPUT                                                                                               OUT_KW    
+12                   (                                                                                                    LPAREN_SC 
+12                   jpg_var                                                                                              IDENTIFIER
+12                   )                                                                                                    RPAREN_SC 
+12                                                                                                                        NEWLINE   
+13                                                                                                                        NEWLINE   
+14                   //SET tells what filepath they are working on//                                                      COMMENT   
+14                                                                                                                        NEWLINE   
+15                   SET                                                                                                  SET_KW    
+15                   (                                                                                                    LPAREN_SC 
+15                   jpg_var                                                                                              IDENTIFIER
+15                   )                                                                                                    RPAREN_SC 
+15                   {                                                                                                    LCBRACK_SC
+15                                                                                                                        NEWLINE   
+16                   //first GET argument asks for what to get from the file(s)//                                         COMMENT   
+16                                                                                                                        NEWLINE   
+17                   //gets metadata, and what metadata, the rest are just priority if the second argument is not
+available// COMMENT   
+17                                                                                                                        NEWLINE   
+18                   meta_data                                                                                            IDENTIFIER
+18                   =                                                                                                    ASSIGN_OP 
+18                   GET                                                                                                  GET_KW    
+18                   (                                                                                                    LPAREN_SC 
+18                   "metadata"                                                                                           STRING_LITERAL
+18                   ,                                                                                                    COMMA_SC  
+18                   "Date Taken"                                                                                         STRING_LITERAL
+18                   ,                                                                                                    COMMA_SC  
+18                   "Date Created"                                                                                       STRING_LITERAL
+18                   )                                                                                                    RPAREN_SC 
+18                                                                                                                        NEWLINE   
+19                                                                                                                        NEWLINE   
+20                   //FILEOPERATE executes a renaming operation using the metadata from the meta_data variable//         COMMENT   
+20                                                                                                                        NEWLINE   
+21                   FILEOPERATE                                                                                          FILEOP_KW 
+21                   (                                                                                                    LPAREN_SC 
+21                   "rename"                                                                                             STRING_LITERAL
+21                   ,                                                                                                    COMMA_SC  
+21                   meta_data                                                                                            IDENTIFIER
+21                   )                                                                                                    RPAREN_SC 
+21                                                                                                                        NEWLINE   
+22                   }                                                                                                    RCBRACK_SC
+22                                                                                                                        NEWLINE   
+23                   }                                                                                                    RCBRACK_SC
+23                                                                                                                        NEWLINE   
+24                   }                                                                                                    RCBRACK_SC
+24                                                                                                                        NEWLINE   
+25                                                                                                                        NEWLINE   
+26                   num                                                                                                  IDENTIFIER
+26                   =                                                                                                    ASSIGN_OP 
+26                   2                                                                                                    NUM_LITERAL
+26                                                                                                                        NEWLINE   
+27                                                                                                                        NEWLINE   
+28                   IF                                                                                                   IF_KW     
+28                   (                                                                                                    LPAREN_SC 
+28                   num                                                                                                  IDENTIFIER
+28                   ==                                                                                                   EQUAL_TO  
+28                   0                                                                                                    NUM_LITERAL
+28                   )                                                                                                    RPAREN_SC 
+28                   {                                                                                                    LCBRACK_SC
+28                                                                                                                        NEWLINE   
+29                                                                                                                        NEWLINE   
+30                                                                                                                        NEWLINE   
+31                   OUTPUT                                                                                               OUT_KW    
+31                   (                                                                                                    LPAREN_SC 
+31                   num                                                                                                  IDENTIFIER
+31                   +                                                                                                    ARITHMETIC_ADD
+31                   "is even"                                                                                            STRING_LITERAL
+31                   )                                                                                                    RPAREN_SC 
+31                                                                                                                        NEWLINE   
+32                                                                                                                        NEWLINE   
+33                                                                                                                        NEWLINE   
+34                   }                                                                                                    RCBRACK_SC
+34                                                                                                                        NEWLINE   
+35                   ELSE                                                                                                 ELSE_KW   
+35                   {                                                                                                    LCBRACK_SC
+35                                                                                                                        NEWLINE   
+36                   OUTPUT                                                                                               OUT_KW    
+36                   (                                                                                                    LPAREN_SC 
+36                   num                                                                                                  IDENTIFIER
+36                   +                                                                                                    ARITHMETIC_ADD
+36                   " is odd"                                                                                            STRING_LITERAL
+36                   )                                                                                                    RPAREN_SC 
+36                                                                                                                        NEWLINE   
+37                   }                                                                                                    RCBRACK_SC
+37                                                                                                                        NEWLINE   
+38                   EOF                                                                                                  EOF_TOKEN 

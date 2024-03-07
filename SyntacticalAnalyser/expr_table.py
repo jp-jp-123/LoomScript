@@ -67,7 +67,7 @@ all_op = {
     "LESS_THAN": [False, True, 4],  # 3
     "GREATER_THAN_EQUAL": [False, True, 4],  # 4
     "LESS_THAN_EQUAL": [False, True, 4],  # 5
-    "NOT_OP": [False, True, 3],
+    "NOT_OP": [False, True, 3], #6
     "AND_OP": [False, True, 2],  # 7
     "OR_OP": [False, True, 2],  # 8
     "ASSIGN_OP_ADD": [True, True, 1],  # 10
