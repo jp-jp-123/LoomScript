@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f4bdb367-3cb9-4207-9b34-459a61201a29" name="Changes" comment="- added advance() for isolated identifier argument in LOOP_KW">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SymbolTable.txt" beforeDir="false" afterPath="$PROJECT_DIR$/SymbolTable.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/expr_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyntacticalAnalyser/synter3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test.loom" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test2.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test2.loom" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestCase/test3.loom" beforeDir="false" afterPath="$PROJECT_DIR$/TestCase/test3.loom" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SymbolTable.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SymbolTable.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
